@@ -1,6 +1,6 @@
 //! Cli Arguments Parsing
 
-use clap::Parser;
+use clap::{Parser, Subcommand};
 use clap_verbosity_flag::Verbosity;
 
 /// Cli arguments
@@ -9,4 +9,13 @@ use clap_verbosity_flag::Verbosity;
 pub struct CliArgs {
     #[command(flatten)]
     pub verbose: Verbosity,
+
+    #[command(subcommand)]
+    pub sub_command: SubCommand,
+}
+
+#[derive(Subcommand, Debug)]
+pub enum SubCommand {
+    // TODO : Document
+    Update,
 }

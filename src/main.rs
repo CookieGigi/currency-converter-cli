@@ -15,7 +15,7 @@ fn main() -> Result<()> {
         .with_max_level(args.verbose.log_level_filter().as_trace())
         .init();
 
-    match run() {
+    match run(args.sub_command) {
         Err(error) => errors_handling(error),
         Ok(()) => {
             // Success Message
