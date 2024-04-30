@@ -1,3 +1,5 @@
+use std::path::Path;
+
 use rust_decimal::Decimal;
 
 use crate::*;
@@ -11,12 +13,16 @@ pub fn run_update() -> Result<()> {
         rate: Decimal::new(189, 2),
     }];
 
-    create_or_update_file(data)?;
+    let path = Path::new("./currency-conversion-rates.tsv");
+
+    create_or_update_file(data, path)?;
     Ok(())
 }
 
-fn create_or_update_file(data: Vec<ConversionRate>) -> Result<()> {
-    let mut wrt = csv::Writer::from_path("./currency-conversion-rates.tsv")?;
+// TODO : Add Unit test
+// TODO : Add Doc
+fn create_or_update_file(data: Vec<ConversionRate>, path: &Path) -> Result<()> {
+    let mut wrt = csv::Writer::from_path(path)?;
 
     for row in data {
         wrt.serialize(row)?;
