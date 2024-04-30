@@ -18,7 +18,22 @@ fn cli_update() -> Result<(), Box<dyn std::error::Error>> {
     cmd.arg("update").assert().success();
 
     // file is created
-    assert!(Path::new("./currency-conversion-rates.tsv").exists());
+    let path = "./currency-conversion-rates.tsv";
+    assert!(Path::new(path).exists());
+
+    // check file content
+    let mut csv_rdr = csv::Reader::from_path(path)?;
+
+    // header
+    {
+        let headers = csv_rdr.headers()?;
+        assert_eq!(headers, vec!["from", "to", "rate"]);
+    }
+
+    // content
+    let first_row = csv_rdr.records().next();
+    assert!(first_row.is_some());
+    assert!(first_row.unwrap().is_ok());
 
     Ok(())
 }

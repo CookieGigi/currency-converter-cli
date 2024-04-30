@@ -1,5 +1,3 @@
-use std::fs::File;
-
 use rust_decimal::Decimal;
 
 use crate::*;
@@ -18,7 +16,11 @@ pub fn run_update() -> Result<()> {
 }
 
 fn create_or_update_file(data: Vec<ConversionRate>) -> Result<()> {
-    let file = File::create("./currency-conversion-rates.tsv");
+    let mut wrt = csv::Writer::from_path("./currency-conversion-rates.tsv")?;
+
+    for row in data {
+        wrt.serialize(row)?;
+    }
 
     Ok(())
 }
