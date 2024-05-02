@@ -8,14 +8,14 @@ fn main() -> Result<()> {
     let args = CliArgs::parse();
 
     // Get config
-    let _config: Config = confy::load("currency-converter-cli", None)?;
+    let config: Config = confy::load("currency-converter-cli", None)?;
 
     // Initialize trace
     tracing_subscriber::fmt()
         .with_max_level(args.verbose.log_level_filter().as_trace())
         .init();
 
-    match run(args.sub_command) {
+    match run(args.sub_command, config) {
         Err(error) => errors_handling(error),
         Ok(()) => {
             // Success Message
