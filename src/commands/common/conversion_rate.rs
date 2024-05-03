@@ -5,6 +5,7 @@ use serde::{Deserialize, Serialize};
 
 use anyhow::Result;
 
+/// Conversion Rates from a currency to another
 #[derive(Serialize, Deserialize)]
 pub struct ConversionRate {
     pub from: String,
@@ -12,7 +13,8 @@ pub struct ConversionRate {
     pub rate: Decimal,
 }
 
-pub fn convert_hashmap_to_vec(
+/// Convert a hashmap (key : to currency, value : rates) and base (from currency) to vec of ConversionRate
+pub fn from_hash_map_to_vec(
     data: HashMap<String, Decimal>,
     base: &str,
 ) -> Result<Vec<ConversionRate>> {
