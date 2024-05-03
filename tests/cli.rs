@@ -22,7 +22,7 @@ fn cli_update() -> Result<(), Box<dyn std::error::Error>> {
     assert!(Path::new(path).exists());
 
     // check file content
-    let mut csv_rdr = csv::Reader::from_path(path)?;
+    let mut csv_rdr = csv::ReaderBuilder::new().delimiter(b'\t').from_path(path)?;
 
     // header
     {

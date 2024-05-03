@@ -8,33 +8,46 @@ use crate::*;
 
 use self::config::Config;
 
-use super::common::{
-    conversion_rate::ConversionRate,
-    supported_symbols::{from_hash_map_to_vec, Symbols},
-};
+use super::common::{self, conversion_rate::ConversionRate, supported_symbols::Symbols};
 
 pub fn run_update(config: Config) -> Result<()> {
+    update_symbols(&config)?;
+
+    update_conversion_rates(&config)?;
+    Ok(())
+}
+
+fn update_conversion_rates(config: &Config) -> Result<()> {
+    let data = get_conversion_rates(&config.api_key, &config.base)?;
+
+    let path = Path::new("./currency-conversion-rates.tsv");
+
+    create_or_update_file(&data, path)?;
+
+    Ok(())
+}
+
+fn update_symbols(config: &Config) -> Result<()> {
     // symbols
     let symbols = get_supported_symbols(&config.api_key)?;
 
     tracing::debug!("{:?}", &symbols);
     tracing::info!("{} Symbols updated", symbols.len());
 
-    let data = get_conversion_rates(&symbols)?;
+    let path = Path::new("./symbols-supported.tsv");
 
-    let path = Path::new("./currency-conversion-rates.tsv");
+    create_or_update_file(&symbols, path)?;
 
-    create_or_update_file(data, path)?;
     Ok(())
 }
 
 // TODO : Add Unit test
 // TODO : Add Doc
-fn create_or_update_file<T>(data: Vec<T>, path: &Path) -> Result<()>
+fn create_or_update_file<T>(data: &Vec<T>, path: &Path) -> Result<()>
 where
     T: Serialize,
 {
-    let mut wrt = csv::Writer::from_path(path)?;
+    let mut wrt = csv::WriterBuilder::new().delimiter(b'\t').from_path(path)?;
 
     for row in data {
         wrt.serialize(row)?;
@@ -46,26 +59,36 @@ where
 #[derive(Deserialize, Debug)]
 struct SuccessLatestResponseAPI {
     //success: bool,
-    symbols: HashMap<String, String>,
+    //success: bool,
+    //timestamp: i64,
+    //base: String,
+    //date: String,
+    rates: HashMap<String, Decimal>,
 }
 
 #[derive(Deserialize, Debug)]
 #[serde(untagged)]
 enum LatestResponseAPI {
-    Success(SuccessSymbolResponseAPI),
+    Success(SuccessLatestResponseAPI),
     Fail(ErrorResponseAPI),
 }
 
-fn get_conversion_rates(symbols: &Vec<Symbols>) -> Result<Vec<ConversionRate>> {
-    //let data = Vec::new();
+fn get_conversion_rates(api_key: &str, base: &str) -> Result<Vec<ConversionRate>> {
+    let url = format!("http://api.exchangeratesapi.io/v1/latest?access_key={api_key}&base={base}");
 
-    let data = vec![ConversionRate {
-        from: "EUR".to_string(),
-        to: "USD".to_string(),
-        rate: Decimal::new(108, 2),
-    }];
+    let response = reqwest::blocking::get(&url)?;
 
-    Ok(data)
+    match response.json()? {
+        LatestResponseAPI::Success(s) => Ok(common::conversion_rate::convert_hashmap_to_vec(
+            s.rates, base,
+        )?),
+        LatestResponseAPI::Fail(f) => Err(anyhow!(
+            "Call {} failed : {} - {}",
+            url,
+            f.error.code,
+            f.error.message
+        )),
+    }
 }
 
 #[derive(Deserialize, Debug)]
@@ -99,7 +122,9 @@ fn get_supported_symbols(api_key: &str) -> Result<Vec<Symbols>> {
     let response = reqwest::blocking::get(&url)?;
 
     match response.json()? {
-        SymbolResponseAPI::Success(s) => Ok(from_hash_map_to_vec(s.symbols)?),
+        SymbolResponseAPI::Success(s) => Ok(
+            commands::common::supported_symbols::from_hash_map_to_vec(s.symbols)?,
+        ),
         SymbolResponseAPI::Fail(f) => Err(anyhow!(
             "Call {} failed : {} - {}",
             url,
