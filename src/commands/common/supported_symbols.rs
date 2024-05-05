@@ -4,7 +4,7 @@ use anyhow::Result;
 use serde::{Deserialize, Serialize};
 
 /// Symbols of a currency
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, PartialEq)]
 pub struct Symbols {
     pub code: String,
     pub name: String,
@@ -22,4 +22,34 @@ pub fn from_hash_map_to_vec(data: HashMap<String, String>) -> Result<Vec<Symbols
     }
 
     Ok(res)
+}
+
+#[cfg(test)]
+mod test {
+    use std::collections::HashMap;
+
+    use crate::commands::common::supported_symbols::Symbols;
+
+    #[test]
+    fn from_hash_map_to_vec() {
+        let mut hashmap = HashMap::new();
+
+        let eur = Symbols {
+            code: "EUR".to_string(),
+            name: "Euro".to_string(),
+        };
+        hashmap.insert("EUR".to_string(), "Euro".to_string());
+
+        let tbh = Symbols {
+            code: "TBH".to_string(),
+            name: "Thai Baht".to_string(),
+        };
+
+        hashmap.insert("TBH".to_string(), "Thai Baht".to_string());
+
+        let res = super::from_hash_map_to_vec(hashmap).unwrap();
+
+        assert!(res.contains(&eur));
+        assert!(res.contains(&tbh));
+    }
 }

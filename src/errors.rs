@@ -1,5 +1,7 @@
 use anyhow::Result;
 
+/// Error handling function call in main
+#[cfg(not(tarpaulin_include))]
 pub fn errors_handling(error: anyhow::Error) -> Result<()> {
     tracing::error!("{:#}", error);
 

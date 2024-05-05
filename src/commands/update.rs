@@ -8,6 +8,7 @@ mod common;
 mod update_converison_rates;
 mod update_symbols;
 
+#[cfg(not(tarpaulin_include))]
 pub fn run_update(config: Config) -> Result<()> {
     update_symbols::update_symbols(&config)?;
 

@@ -6,7 +6,7 @@ use serde::{Deserialize, Serialize};
 use anyhow::Result;
 
 /// Conversion Rates from a currency to another
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, PartialEq, Debug)]
 pub struct ConversionRate {
     pub from: String,
     pub to: String,
@@ -29,4 +29,40 @@ pub fn from_hash_map_to_vec(
     }
 
     Ok(res)
+}
+
+#[cfg(test)]
+mod test {
+    use std::collections::HashMap;
+
+    use rust_decimal::Decimal;
+
+    use crate::commands::common::conversion_rate::ConversionRate;
+
+    #[test]
+    fn from_hash_map_to_vec() {
+        let mut hashmap = HashMap::new();
+
+        let base = "EUR".to_string();
+
+        let usd = ConversionRate {
+            from: base.clone(),
+            to: "USD".to_string(),
+            rate: Decimal::new(108, 2),
+        };
+        hashmap.insert("USD".to_string(), Decimal::new(108, 2));
+
+        let tbh = ConversionRate {
+            from: base.clone(),
+            to: "TBH".to_string(),
+            rate: Decimal::new(32, 0),
+        };
+
+        hashmap.insert("TBH".to_string(), Decimal::new(32, 0));
+
+        let res = super::from_hash_map_to_vec(hashmap, &base).unwrap();
+
+        assert!(res.contains(&usd));
+        assert!(res.contains(&tbh));
+    }
 }
