@@ -21,10 +21,6 @@ fn main() -> Result<()> {
 
     match run(args.sub_command, config) {
         Err(error) => errors_handling(error),
-        Ok(()) => {
-            // Success Message
-            tracing::info!("Success !");
-            Ok(())
-        }
+        Ok(()) => Ok(()),
     }
 }
