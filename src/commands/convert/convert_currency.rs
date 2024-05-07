@@ -12,7 +12,7 @@ use anyhow::Result;
 pub fn convert(config: &Config, from: &str, to: &str, value: Decimal) -> Result<Decimal> {
     let conversion_rates = load_data(Path::new(&config.conversion_rates_file_path))?;
 
-    let rate = ConversionRate::get_conversion_rate(config, &conversion_rates, from, to)?;
+    let rate = ConversionRate::get_conversion_rate(&config.base, &conversion_rates, from, to)?;
 
     Ok(value * rate.rate)
 }

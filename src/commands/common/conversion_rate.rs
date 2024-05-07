@@ -5,8 +5,6 @@ use serde::{Deserialize, Serialize};
 
 use anyhow::{bail, Result};
 
-use crate::config::Config;
-
 /// Conversion Rates from a currency to another
 #[derive(Serialize, Deserialize, PartialEq, Debug, Clone)]
 pub struct ConversionRate {
@@ -16,14 +14,15 @@ pub struct ConversionRate {
 }
 
 impl ConversionRate {
+    /// Get conversion rate from a currency to another (from conversion_rates provided)
     pub fn get_conversion_rate(
-        config: &Config,
+        base: &str,
         conversion_rates: &Vec<ConversionRate>,
         from: &str,
         to: &str,
     ) -> Result<ConversionRate> {
         let res: ConversionRate;
-        if to == config.base {
+        if to == base {
             let mut search_iter = conversion_rates.iter().filter(|rate| rate.to == from);
             let search_result = search_iter.next();
 
@@ -35,7 +34,7 @@ impl ConversionRate {
                 to: to.to_string(),
                 rate: Decimal::new(1, 0) / search_result.unwrap().rate,
             };
-        } else if from == config.base {
+        } else if from == base {
             let mut search_iter = conversion_rates.iter().filter(|rate| rate.to == to);
 
             let search_result = search_iter.next();
@@ -46,9 +45,8 @@ impl ConversionRate {
             res = search_result.unwrap().clone();
         } else {
             let rate_from =
-                ConversionRate::get_conversion_rate(config, conversion_rates, &config.base, from)?;
-            let rate_to =
-                ConversionRate::get_conversion_rate(config, conversion_rates, &config.base, to)?;
+                ConversionRate::get_conversion_rate(base, conversion_rates, base, from)?;
+            let rate_to = ConversionRate::get_conversion_rate(base, conversion_rates, base, to)?;
 
             res = ConversionRate {
                 from: from.to_string(),
@@ -86,7 +84,7 @@ mod test {
     use rust_decimal::Decimal;
     use rust_decimal_macros::dec;
 
-    use crate::{commands::common::conversion_rate::ConversionRate, config::Config};
+    use crate::commands::common::conversion_rate::ConversionRate;
 
     #[test]
     fn from_hash_map_to_vec() {
@@ -130,12 +128,7 @@ mod test {
 
         let data = vec![usd.clone(), tbh];
 
-        let config = Config {
-            base: "EUR".to_string(),
-            ..Default::default()
-        };
-
-        let res = ConversionRate::get_conversion_rate(&config, &data, "EUR", "USD");
+        let res = ConversionRate::get_conversion_rate(&base, &data, "EUR", "USD");
 
         println!("{:?}", res);
 
@@ -159,12 +152,7 @@ mod test {
 
         let data = vec![usd.clone(), tbh];
 
-        let config = Config {
-            base: "EUR".to_string(),
-            ..Default::default()
-        };
-
-        let res = ConversionRate::get_conversion_rate(&config, &data, "USD", "EUR");
+        let res = ConversionRate::get_conversion_rate(&base, &data, "USD", "EUR");
 
         println!("{:?}", res);
 
@@ -193,12 +181,7 @@ mod test {
 
         let data = vec![usd.clone(), tbh.clone()];
 
-        let config = Config {
-            base: "EUR".to_string(),
-            ..Default::default()
-        };
-
-        let res = ConversionRate::get_conversion_rate(&config, &data, "USD", "TBH");
+        let res = ConversionRate::get_conversion_rate(&base, &data, "USD", "TBH");
 
         println!("{:?}", res);
 
