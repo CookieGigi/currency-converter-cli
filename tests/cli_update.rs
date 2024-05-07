@@ -36,6 +36,10 @@ fn cli_update() -> Result<(), Box<dyn std::error::Error>> {
 
     let server = MockServer::start();
 
+    let dirpath = "./temp/test/cli_update";
+
+    std::fs::create_dir_all(dirpath).unwrap();
+
     // mock latest endpoint
     let mock_conversion_rate = server.mock(|when, then| {
         when.method(GET)
@@ -57,17 +61,21 @@ fn cli_update() -> Result<(), Box<dyn std::error::Error>> {
     });
 
     // modify config
-    let config_path = "./tests/test-config.toml";
-    let mut config: Config = confy::load_path(config_path).unwrap();
+    let config_path = dirpath.to_string() + "/config.toml";
+    let conversion_rate_path = dirpath.to_string() + "/conversion_rate.tsv";
+    let symbols_path = dirpath.to_string() + "/symbols.tsv";
+    #[allow(clippy::needless_update)]
+    let config = Config {
+        latest_endpoint_url: server.url("/latest") + "?access_key={api_key}&base={base}",
+        symbols_endpoint_url: server.url("/symbols") + "?access_key={api_key}",
+        base: base.to_string(),
+        api_key: api_key.to_string(),
+        conversion_rates_file_path: conversion_rate_path,
+        symbols_file_path: symbols_path,
+        ..Default::default()
+    };
 
-    config.latest_endpoint_url = server.url("/latest") + "?access_key={api_key}&base={base}";
-    config.symbols_endpoint_url = server.url("/symbols") + "?access_key={api_key}";
-    config.base = base.to_string();
-    config.api_key = api_key.to_string();
-    config.conversion_rates_file_path = "./tests/conversion_rates.tsv".to_string();
-    config.symbols_file_path = "./tests/symbols.tsv".to_string();
-
-    confy::store_path("./tests/test-config.toml", &config).unwrap();
+    confy::store_path(&config_path, &config).unwrap();
 
     // exec command
     let mut cmd = Command::cargo_bin("currency-converter-cli")?;
@@ -75,7 +83,7 @@ fn cli_update() -> Result<(), Box<dyn std::error::Error>> {
     // command working
     cmd.arg("-vvv")
         .arg("--config-path")
-        .arg("./tests/test-config.toml")
+        .arg(config_path)
         .arg("update")
         .assert()
         .success();
@@ -103,6 +111,8 @@ fn cli_update() -> Result<(), Box<dyn std::error::Error>> {
     let first_row = csv_rdr.records().next();
     assert!(first_row.is_some());
     assert!(first_row.unwrap().is_ok());
+
+    std::fs::remove_dir_all(dirpath).unwrap();
 
     Ok(())
 }

@@ -1,6 +1,0 @@
-api_key = "123"
-base = "EUR"
-symbols_endpoint_url = "http://127.0.0.1:34141/symbols?access_key={api_key}"
-latest_endpoint_url = "http://127.0.0.1:34141/latest?access_key={api_key}&base={base}"
-symbols_file_path = "./tests/symbols.tsv"
-conversion_rates_file_path = "./tests/conversion_rates.tsv"
