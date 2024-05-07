@@ -64,8 +64,10 @@ fn cli_update() -> Result<(), Box<dyn std::error::Error>> {
     config.symbols_endpoint_url = server.url("/symbols") + "?access_key={api_key}";
     config.base = base.to_string();
     config.api_key = api_key.to_string();
+    config.conversion_rates_file_path = "./tests/conversion_rates.tsv".to_string();
+    config.symbols_file_path = "./tests/symbols.tsv".to_string();
 
-    confy::store_path("./tests/test-config.toml", config).unwrap();
+    confy::store_path("./tests/test-config.toml", &config).unwrap();
 
     // exec command
     let mut cmd = Command::cargo_bin("currency-converter-cli")?;
@@ -83,11 +85,13 @@ fn cli_update() -> Result<(), Box<dyn std::error::Error>> {
     mock_conversion_rate.assert();
 
     // file is created
-    let path = "./currency-conversion-rates.tsv";
-    assert!(Path::new(path).exists());
+    assert!(Path::new(&config.symbols_file_path).exists());
+    assert!(Path::new(&config.conversion_rates_file_path).exists());
 
     // check file content
-    let mut csv_rdr = csv::ReaderBuilder::new().delimiter(b'\t').from_path(path)?;
+    let mut csv_rdr = csv::ReaderBuilder::new()
+        .delimiter(b'\t')
+        .from_path(&config.conversion_rates_file_path)?;
 
     // header
     {
