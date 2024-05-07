@@ -31,10 +31,10 @@ pub enum SubCommand {
 pub struct ConvertArgs {
     /// origin currency
     #[arg(long)]
-    from: String,
+    pub from: String,
     /// destination currency
     #[arg(long)]
-    to: String,
+    pub to: String,
     /// value to convert
-    value: Decimal,
+    pub value: Decimal,
 }
