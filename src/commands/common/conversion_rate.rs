@@ -202,4 +202,48 @@ mod test {
         assert!(res.is_ok());
         assert_eq!(res.unwrap(), expected);
     }
+    #[test]
+    fn get_conversion_rate_unknow_from() {
+        let base = "EUR".to_string();
+        let usd = ConversionRate {
+            from: base.clone(),
+            to: "USD".to_string(),
+            rate: Decimal::new(108, 2),
+        };
+        let tbh = ConversionRate {
+            from: base.clone(),
+            to: "TBH".to_string(),
+            rate: Decimal::new(32, 0),
+        };
+
+        let data = vec![usd.clone(), tbh];
+
+        let res = ConversionRate::get_conversion_rate(&base, &data, "TEST", "EUR");
+
+        println!("{:?}", res);
+
+        assert!(res.is_err());
+    }
+    #[test]
+    fn get_conversion_rate_unknown_to() {
+        let base = "EUR".to_string();
+        let usd = ConversionRate {
+            from: base.clone(),
+            to: "USD".to_string(),
+            rate: Decimal::new(108, 2),
+        };
+        let tbh = ConversionRate {
+            from: base.clone(),
+            to: "TBH".to_string(),
+            rate: Decimal::new(32, 0),
+        };
+
+        let data = vec![usd.clone(), tbh];
+
+        let res = ConversionRate::get_conversion_rate(&base, &data, "EUR", "TEST");
+
+        println!("{:?}", res);
+
+        assert!(res.is_err());
+    }
 }
