@@ -4,9 +4,12 @@ use anyhow::Result;
 use rust_decimal::Decimal;
 use serde::Deserialize;
 
-use crate::{commands::common::conversion_rate::ConversionRate, config::Config};
+use crate::{
+    commands::common::{conversion_rate::ConversionRate, create_or_update_file},
+    config::Config,
+};
 
-use super::common::{create_or_update_file, ErrorResponseAPI};
+use super::common::ErrorResponseAPI;
 
 /// Update conversion rate files
 pub fn update_conversion_rates(config: &Config) -> Result<()> {

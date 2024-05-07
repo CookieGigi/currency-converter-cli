@@ -1,7 +1,7 @@
 use std::{collections::HashMap, path::Path};
 
 use crate::{
-    commands::{common::supported_symbols::Symbols, update::common::create_or_update_file},
+    commands::common::{create_or_update_file, supported_symbols::Symbols},
     config::Config,
 };
 
