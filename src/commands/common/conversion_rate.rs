@@ -14,7 +14,7 @@ pub struct ConversionRate {
 }
 
 impl ConversionRate {
-    /// Get conversion rate from a currency to another (from conversion_rates provided)
+    /// Get conversion rate from a currency ([`from`]) to another ([`to`]) (from [`conversion_rates`] provided)
     pub fn get_conversion_rate(
         base: &str,
         conversion_rates: &Vec<ConversionRate>,
@@ -22,6 +22,9 @@ impl ConversionRate {
         to: &str,
     ) -> Result<ConversionRate> {
         let res: ConversionRate;
+
+        // if [`to`] == [`base`] then we search a rate which convert to [`from`] and return
+        // inverted rate
         if to == base {
             let mut search_iter = conversion_rates.iter().filter(|rate| rate.to == from);
             let search_result = search_iter.next();
@@ -34,6 +37,7 @@ impl ConversionRate {
                 to: to.to_string(),
                 rate: Decimal::new(1, 0) / search_result.unwrap().rate,
             };
+        // if [`from`] == [`base`] then we search a rate which convert to [`to`]
         } else if from == base {
             let mut search_iter = conversion_rates.iter().filter(|rate| rate.to == to);
 
@@ -43,6 +47,10 @@ impl ConversionRate {
                 bail!("{to} symbols not found !");
             }
             res = search_result.unwrap().clone();
+        // else we search to conversion rates :
+        // - rates1 : from [`base`] to [`from`]
+        // - rate2 : from [`base`] to [`to`]
+        // and we return rate2/rate1
         } else {
             let rate_from =
                 ConversionRate::get_conversion_rate(base, conversion_rates, base, from)?;

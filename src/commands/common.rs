@@ -21,6 +21,7 @@ where
     Ok(())
 }
 
+/// Load data from tsv file
 pub fn load_data<'a, T>(path: &Path) -> Result<Vec<T>>
 where
     T: for<'de> Deserialize<'de>,

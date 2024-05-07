@@ -9,6 +9,7 @@ use crate::{
 
 use anyhow::Result;
 
+/// Convert a `value` `from` a currency `to` another
 pub fn convert(config: &Config, from: &str, to: &str, value: Decimal) -> Result<Decimal> {
     let conversion_rates = load_data(Path::new(&config.conversion_rates_file_path))?;
 
