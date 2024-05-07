@@ -1,11 +1,18 @@
+use std::path::Path;
+
 use rust_decimal::Decimal;
 
-use crate::{commands::common::conversion_rate::ConversionRate, config::Config};
+use crate::{
+    commands::common::{conversion_rate::ConversionRate, load_data},
+    config::Config,
+};
 
 use anyhow::Result;
 
 pub fn convert(config: &Config, from: &str, to: &str, value: Decimal) -> Result<Decimal> {
-    let rate = ConversionRate::get_conversion_rate(config, from, to)?;
+    let conversion_rates = load_data(Path::new(&config.conversion_rates_file_path))?;
+
+    let rate = ConversionRate::get_conversion_rate(config, &conversion_rates, from, to)?;
 
     Ok(value * rate.rate)
 }
