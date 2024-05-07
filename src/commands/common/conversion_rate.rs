@@ -22,8 +22,6 @@ impl ConversionRate {
         let conversion_rates: Vec<ConversionRate> =
             load_data(Path::new(&config.conversion_rates_file_path))?;
 
-        println!("{:?}", conversion_rates);
-
         let res: ConversionRate;
         if to == config.base {
             let mut search_iter = conversion_rates.iter().filter(|rate| rate.to == from);
