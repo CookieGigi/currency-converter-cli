@@ -2,18 +2,21 @@ use std::path::Path;
 
 use rust_decimal::Decimal;
 
-use crate::{
-    commands::common::{conversion_rate::ConversionRate, load_data},
-    config::Config,
-};
+use crate::commands::common::{conversion_rate::ConversionRate, load_data};
 
 use anyhow::Result;
 
 /// Convert a `value` `from` a currency `to` another
-pub fn convert(config: &Config, from: &str, to: &str, value: Decimal) -> Result<Decimal> {
-    let conversion_rates = load_data(Path::new(&config.conversion_rates_file_path))?;
+pub fn convert(
+    conversion_rates_file_path: &str,
+    base: &str,
+    from: &str,
+    to: &str,
+    value: Decimal,
+) -> Result<Decimal> {
+    let conversion_rates = load_data(Path::new(conversion_rates_file_path))?;
 
-    let rate = ConversionRate::get_conversion_rate(&config.base, &conversion_rates, from, to)?;
+    let rate = ConversionRate::get_conversion_rate(base, &conversion_rates, from, to)?;
 
     Ok(value * rate.rate)
 }
@@ -57,7 +60,13 @@ mod test {
             ..Default::default()
         };
 
-        let res = super::convert(&config, &from, &to, dec!(10.0));
+        let res = super::convert(
+            &config.conversion_rates_file_path,
+            &config.base,
+            &from,
+            &to,
+            dec!(10.0),
+        );
         assert!(res.is_ok());
         assert_eq!(res.unwrap(), dec!(10.8));
     }

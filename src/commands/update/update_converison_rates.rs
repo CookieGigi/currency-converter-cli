@@ -4,22 +4,23 @@ use anyhow::Result;
 use rust_decimal::Decimal;
 use serde::Deserialize;
 
-use crate::{
-    commands::common::{conversion_rate::ConversionRate, create_or_update_file},
-    config::Config,
-};
+use crate::commands::common::{conversion_rate::ConversionRate, create_or_update_file};
 
 use super::common::ErrorResponseAPI;
 
 /// Update conversion rate files
-pub fn update_conversion_rates(config: &Config) -> Result<()> {
-    let url = &config
-        .latest_endpoint_url
-        .replace("{api_key}", &config.api_key)
-        .replace("{base}", &config.base);
-    let data = get_conversion_rates(url, &config.base)?;
+pub fn update_conversion_rates(
+    latest_endpoint_url: &str,
+    api_key: &str,
+    base: &str,
+    conversion_rates_file_path: &str,
+) -> Result<()> {
+    let url = latest_endpoint_url
+        .replace("{api_key}", api_key)
+        .replace("{base}", base);
+    let data = get_conversion_rates(&url, base)?;
 
-    let path = Path::new(&config.conversion_rates_file_path);
+    let path = Path::new(conversion_rates_file_path);
 
     create_or_update_file(&data, path)?;
 
@@ -216,7 +217,12 @@ mod test {
             symbols_file_path: "test".to_string(),
         };
 
-        let response = super::update_conversion_rates(&config);
+        let response = super::update_conversion_rates(
+            &config.latest_endpoint_url,
+            &config.api_key,
+            &config.base,
+            &config.conversion_rates_file_path,
+        );
 
         mock.assert();
 

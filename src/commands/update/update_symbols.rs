@@ -1,9 +1,6 @@
 use std::{collections::HashMap, path::Path};
 
-use crate::{
-    commands::common::{create_or_update_file, supported_symbols::Symbols},
-    config::Config,
-};
+use crate::commands::common::{create_or_update_file, supported_symbols::Symbols};
 
 use anyhow::Result;
 use serde::Deserialize;
@@ -11,16 +8,18 @@ use serde::Deserialize;
 use super::common::ErrorResponseAPI;
 
 /// Update supported symbols file
-pub fn update_symbols(config: &Config) -> Result<()> {
-    let url = &config
-        .symbols_endpoint_url
-        .replace("{api_key}", &config.api_key);
-    let symbols = get_supported_symbols(url)?;
+pub fn update_symbols(
+    symbols_endpoint_url: &str,
+    api_key: &str,
+    symbols_file_path: &str,
+) -> Result<()> {
+    let url = symbols_endpoint_url.replace("{api_key}", api_key);
+    let symbols = get_supported_symbols(&url)?;
 
     tracing::debug!("{:?}", &symbols);
     tracing::info!("{} Symbols updated", symbols.len());
 
-    let path = Path::new(&config.symbols_file_path);
+    let path = Path::new(symbols_file_path);
 
     create_or_update_file(&symbols, path)?;
 
@@ -200,7 +199,11 @@ mod test {
             symbols_file_path: file_path,
         };
 
-        let response = super::update_symbols(&config);
+        let response = super::update_symbols(
+            &config.symbols_endpoint_url,
+            &config.api_key,
+            &config.symbols_file_path,
+        );
 
         mock.assert();
 
