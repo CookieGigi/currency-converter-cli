@@ -1,9 +1,11 @@
 use anyhow::Result;
 
 pub trait ListDataItem {
+    /// Define how write item in a list
     fn display_item(&self) -> String;
 }
 
+/// List all items using [`ListDataItem`] in a String with "\n" between each item
 // Ignore in tarpaulin because it detect uncovered line on iter() for some reason
 #[cfg(not(tarpaulin_include))]
 pub fn list_data<T>(data: &[T]) -> Result<String>
