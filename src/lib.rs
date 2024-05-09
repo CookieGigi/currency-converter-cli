@@ -13,9 +13,12 @@ pub mod errors;
 pub fn run(sub_command: SubCommand, config: Config) -> Result<()> {
     use commands::convert::run_convert;
 
+    use crate::commands::list::run_list;
+
     match sub_command {
         SubCommand::Update => run_update(&config)?,
         SubCommand::Convert(args) => run_convert(&config, &args)?,
+        SubCommand::List(args) => run_list(&config, &args)?,
     }
     Ok(())
 }

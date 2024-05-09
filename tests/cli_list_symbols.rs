@@ -44,7 +44,7 @@ fn cli_get_symbols() -> Result<(), Box<dyn std::error::Error>> {
         .arg("symbols")
         .assert()
         .success()
-        .stdout(predicate::str::contains("code\tname"));
+        .stdout(predicate::str::contains("EUR : Euro"));
 
     std::fs::remove_dir_all(dirpath).unwrap();
 

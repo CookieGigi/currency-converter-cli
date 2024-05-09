@@ -6,7 +6,7 @@ use serde::{Deserialize, Serialize};
 use anyhow::{bail, Result};
 
 /// Conversion Rates from a currency to another
-#[derive(Serialize, Deserialize, PartialEq, Debug, Clone)]
+#[derive(Serialize, Deserialize, PartialEq, Debug, Clone, PartialOrd, Eq, Ord)]
 pub struct ConversionRate {
     pub from: String,
     pub to: String,

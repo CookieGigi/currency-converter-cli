@@ -4,7 +4,7 @@ use anyhow::Result;
 use serde::{Deserialize, Serialize};
 
 /// Symbols of a currency
-#[derive(Serialize, Deserialize, Debug, PartialEq)]
+#[derive(Serialize, Deserialize, Debug, PartialEq, PartialOrd, Eq, Ord)]
 pub struct Symbols {
     pub code: String,
     pub name: String,

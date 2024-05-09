@@ -25,6 +25,8 @@ pub enum SubCommand {
     Update,
     /// Convert a value from a currency to an other
     Convert(ConvertArgs),
+    /// List all data from dataset indicated
+    List(ListArgs),
 }
 
 #[derive(Args, Debug)]
@@ -37,4 +39,17 @@ pub struct ConvertArgs {
     pub to: String,
     /// value to convert
     pub value: Decimal,
+}
+
+#[derive(Args, Debug)]
+pub struct ListArgs {
+    /// dataset to List
+    #[command(subcommand)]
+    pub dataset: ListDataSet,
+}
+
+#[derive(Debug, Subcommand)]
+pub enum ListDataSet {
+    Symbols,
+    ConversionRates,
 }
