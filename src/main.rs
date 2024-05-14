@@ -11,7 +11,7 @@ fn main() -> Result<()> {
     // Get config
     let config: Config = match &args.config_path.is_none() {
         true => confy::load("currency-converter-cli", None)?,
-        false => confy::load_path(args.config_path.unwrap())?,
+        false => confy::load_path(args.config_path.clone().unwrap())?,
     };
 
     // Initialize trace
@@ -19,7 +19,7 @@ fn main() -> Result<()> {
         .with_max_level(args.verbose.log_level_filter().as_trace())
         .init();
 
-    match run(args.sub_command, config) {
+    match run(args.sub_command, config, args.config_path) {
         Err(error) => errors_handling(error),
         Ok(()) => Ok(()),
     }

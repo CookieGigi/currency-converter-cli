@@ -10,15 +10,16 @@ pub mod errors;
 
 /// Handle commands execution
 #[cfg(not(tarpaulin_include))]
-pub fn run(sub_command: SubCommand, config: Config) -> Result<()> {
+pub fn run(sub_command: SubCommand, config: Config, config_path: Option<String>) -> Result<()> {
     use commands::convert::run_convert;
 
-    use crate::commands::list::run_list;
+    use crate::commands::{info::run_info, list::run_list};
 
     match sub_command {
         SubCommand::Update => run_update(&config)?,
         SubCommand::Convert(args) => run_convert(&config, &args)?,
         SubCommand::List(args) => run_list(&config, &args)?,
+        SubCommand::Info(args) => run_info(config, &args, config_path)?,
     }
     Ok(())
 }

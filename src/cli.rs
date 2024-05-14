@@ -27,6 +27,8 @@ pub enum SubCommand {
     Convert(ConvertArgs),
     /// List all data from dataset indicated
     List(ListArgs),
+    /// Show informations
+    Info(InfoArgs),
 }
 
 #[derive(Args, Debug)]
@@ -52,4 +54,23 @@ pub struct ListArgs {
 pub enum ListDataSet {
     Symbols,
     ConversionRates,
+}
+
+#[derive(Args, Debug)]
+pub struct InfoArgs {
+    /// show all information
+    #[arg(long, action = clap::ArgAction::SetTrue)]
+    pub all: bool,
+
+    /// show config information
+    #[arg(long, action = clap::ArgAction::SetTrue)]
+    pub config: bool,
+
+    /// show symbols information
+    #[arg(long, action = clap::ArgAction::SetTrue)]
+    pub symbols: bool,
+
+    /// show symbols information
+    #[arg(long, action = clap::ArgAction::SetTrue)]
+    pub conversion_rates: bool,
 }
