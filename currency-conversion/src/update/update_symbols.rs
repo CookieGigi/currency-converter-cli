@@ -1,6 +1,6 @@
 use std::{collections::HashMap, path::Path};
 
-use crate::commands::common::{create_or_update_file, supported_symbols::Symbols};
+use crate::common::{create_or_update_file, supported_symbols::Symbols};
 
 use anyhow::Result;
 use serde::Deserialize;
@@ -46,9 +46,9 @@ fn get_supported_symbols(url: &str) -> Result<Vec<Symbols>> {
     let response = reqwest::blocking::get(url)?;
 
     match response.json()? {
-        SymbolResponseAPI::Success(s) => {
-            Ok(crate::commands::common::supported_symbols::from_hash_map_to_vec(s.symbols)?)
-        }
+        SymbolResponseAPI::Success(s) => Ok(
+            crate::common::supported_symbols::from_hash_map_to_vec(s.symbols)?,
+        ),
         SymbolResponseAPI::Fail(f) => Err(anyhow::anyhow!(
             "Call {} failed : {} - {}",
             url,
@@ -65,7 +65,7 @@ mod test {
     use httpmock::{Method::GET, MockServer};
     use serde_json::json;
 
-    use crate::{commands::common::supported_symbols::Symbols, config::Config};
+    use crate::common::supported_symbols::Symbols;
 
     fn setup(path: &str) {
         std::fs::create_dir_all(path).unwrap();
@@ -190,19 +190,10 @@ mod test {
 
         let file_path = dirpath.to_string() + "symbols.tsv";
 
-        let config = Config {
-            api_key: api_key.to_string(),
-            base: "EUR".to_string(),
-            conversion_rates_file_path: "test".to_string(),
-            latest_endpoint_url: server.url("/test?access_key={api_key}&base={base}"),
-            symbols_endpoint_url: server.url("/test?access_key={api_key}"),
-            symbols_file_path: file_path,
-        };
-
         let response = super::update_symbols(
-            &config.symbols_endpoint_url,
-            &config.api_key,
-            &config.symbols_file_path,
+            &server.url("/test?access_key={api_key}"),
+            api_key,
+            &file_path,
         );
 
         mock.assert();
@@ -210,7 +201,7 @@ mod test {
         println!("{:?}", response);
         assert!(response.is_ok());
 
-        assert!(Path::new(&config.symbols_file_path).exists());
+        assert!(Path::new(&file_path).exists());
 
         end(dirpath);
     }

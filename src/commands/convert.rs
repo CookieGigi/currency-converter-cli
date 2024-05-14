@@ -2,9 +2,7 @@ use crate::{cli::ConvertArgs, config::Config};
 
 use anyhow::Result;
 
-use self::convert_currency::convert;
-
-pub mod convert_currency;
+use currency_conversion::convert::convert_currency::convert;
 
 #[cfg(not(tarpaulin_include))]
 pub fn run_convert(config: &Config, args: &ConvertArgs) -> Result<()> {

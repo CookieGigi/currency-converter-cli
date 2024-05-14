@@ -1,8 +1,7 @@
 use anyhow::Result;
 
-use crate::commands::common::conversion_rate::ConversionRate;
-
 use super::common::{get_data_info, DataInfo};
+use currency_conversion::common::conversion_rate::ConversionRate;
 
 /// Get informations about conversion rate data store locally
 #[cfg(not(tarpaulin_include))]

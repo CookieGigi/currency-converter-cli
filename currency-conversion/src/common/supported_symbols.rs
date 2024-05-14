@@ -3,11 +3,20 @@ use std::collections::HashMap;
 use anyhow::Result;
 use serde::{Deserialize, Serialize};
 
+use crate::list::list_data::ListDataItem;
+
 /// Symbols of a currency
 #[derive(Serialize, Deserialize, Debug, PartialEq, PartialOrd, Eq, Ord)]
 pub struct Symbols {
     pub code: String,
     pub name: String,
+}
+
+impl ListDataItem for Symbols {
+    #[cfg(not(tarpaulin_include))]
+    fn display_item(&self) -> String {
+        format!("{} : {}", &self.code, &self.name)
+    }
 }
 
 /// Convert a hahmap (key : code, value : name) to a vec of Symbols
@@ -28,7 +37,7 @@ pub fn from_hash_map_to_vec(data: HashMap<String, String>) -> Result<Vec<Symbols
 mod test {
     use std::collections::HashMap;
 
-    use crate::commands::common::supported_symbols::Symbols;
+    use crate::common::supported_symbols::Symbols;
 
     #[test]
     fn from_hash_map_to_vec() {

@@ -1,16 +1,13 @@
 use crate::config::Config;
 
 use anyhow::Result;
-
-use self::update_converison_rates::update_conversion_rates;
-
-mod common;
-mod update_converison_rates;
-mod update_symbols;
+use currency_conversion::update::{
+    update_converison_rates::update_conversion_rates, update_symbols::update_symbols,
+};
 
 #[cfg(not(tarpaulin_include))]
 pub fn run_update(config: &Config) -> Result<()> {
-    update_symbols::update_symbols(
+    update_symbols(
         &config.symbols_endpoint_url,
         &config.api_key,
         &config.symbols_file_path,

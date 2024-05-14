@@ -1,8 +1,7 @@
 use std::{path::Path, time::Duration};
 
+use currency_conversion::common::load_data;
 use serde::Deserialize;
-
-use crate::commands::common::load_data;
 
 use super::info_config::ConfigInfo;
 
@@ -58,9 +57,10 @@ where
 mod test {
     use std::path::Path;
 
+    use currency_conversion::common::create_or_update_file;
     use serde::{Deserialize, Serialize};
 
-    use crate::commands::{common::create_or_update_file, info::common::DataInfo};
+    use crate::commands::info::common::DataInfo;
 
     #[derive(Serialize, Deserialize, Debug)]
     struct TestData {

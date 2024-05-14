@@ -1,19 +1,16 @@
-use std::path::Path;
-
 use anyhow::Result;
+use currency_conversion::common::conversion_rate::ConversionRate;
+use currency_conversion::common::load_data;
+use currency_conversion::common::supported_symbols::Symbols;
+use currency_conversion::list::list_data::list_data;
+use currency_conversion::list::list_data::ListDataItem;
 use serde::Deserialize;
+use std::path::Path;
 
 use crate::{
     cli::{ListArgs, ListDataSet},
-    commands::list::list_data::list_data,
     config::Config,
 };
-
-use self::list_data::ListDataItem;
-
-use super::common::{conversion_rate::ConversionRate, load_data, supported_symbols::Symbols};
-
-mod list_data;
 
 #[cfg(not(tarpaulin_include))]
 pub fn run_list(config: &Config, args: &ListArgs) -> Result<()> {
@@ -38,18 +35,4 @@ where
     println!("{}", list_data(&data)?);
 
     Ok(())
-}
-
-impl ListDataItem for ConversionRate {
-    #[cfg(not(tarpaulin_include))]
-    fn display_item(&self) -> String {
-        format!("{} -> {} : {}", &self.from, &self.to, &self.rate)
-    }
-}
-
-impl ListDataItem for Symbols {
-    #[cfg(not(tarpaulin_include))]
-    fn display_item(&self) -> String {
-        format!("{} : {}", &self.code, &self.name)
-    }
 }

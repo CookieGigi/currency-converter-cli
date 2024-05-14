@@ -5,12 +5,21 @@ use serde::{Deserialize, Serialize};
 
 use anyhow::{bail, Result};
 
+use crate::list::list_data::ListDataItem;
+
 /// Conversion Rates from a currency to another
 #[derive(Serialize, Deserialize, PartialEq, Debug, Clone, PartialOrd, Eq, Ord)]
 pub struct ConversionRate {
     pub from: String,
     pub to: String,
     pub rate: Decimal,
+}
+
+impl ListDataItem for ConversionRate {
+    #[cfg(not(tarpaulin_include))]
+    fn display_item(&self) -> String {
+        format!("{} -> {} : {}", &self.from, &self.to, &self.rate)
+    }
 }
 
 impl ConversionRate {
@@ -92,7 +101,7 @@ mod test {
     use rust_decimal::Decimal;
     use rust_decimal_macros::dec;
 
-    use crate::commands::common::conversion_rate::ConversionRate;
+    use crate::common::conversion_rate::ConversionRate;
 
     #[test]
     fn from_hash_map_to_vec() {

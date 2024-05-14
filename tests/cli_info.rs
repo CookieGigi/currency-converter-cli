@@ -1,10 +1,8 @@
 use assert_cmd::Command;
-use currency_converter_cli::{
-    commands::common::{
-        conversion_rate::ConversionRate, create_or_update_file, supported_symbols::Symbols,
-    },
-    config::Config,
+use currency_conversion::common::{
+    conversion_rate::ConversionRate, create_or_update_file, supported_symbols::Symbols,
 };
+use currency_converter_cli::config::Config;
 use rust_decimal_macros::dec;
 use std::path::Path;
 

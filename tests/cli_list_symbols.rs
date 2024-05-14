@@ -1,10 +1,8 @@
 use std::path::Path;
 
 use assert_cmd::Command;
-use currency_converter_cli::{
-    commands::common::{create_or_update_file, supported_symbols::Symbols},
-    config::Config,
-};
+use currency_conversion::common::{create_or_update_file, supported_symbols::Symbols};
+use currency_converter_cli::config::Config;
 use predicates::prelude::predicate;
 
 #[test]

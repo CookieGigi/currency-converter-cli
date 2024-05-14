@@ -4,7 +4,7 @@ use anyhow::Result;
 use rust_decimal::Decimal;
 use serde::Deserialize;
 
-use crate::commands::common::{conversion_rate::ConversionRate, create_or_update_file};
+use crate::common::{conversion_rate::ConversionRate, create_or_update_file};
 
 use super::common::ErrorResponseAPI;
 
@@ -53,9 +53,9 @@ fn get_conversion_rates(url: &str, base: &str) -> Result<Vec<ConversionRate>> {
     tracing::debug!("{:?}", response);
 
     match response.json()? {
-        LatestResponseAPI::Success(s) => {
-            Ok(crate::commands::common::conversion_rate::from_hash_map_to_vec(s.rates, base)?)
-        }
+        LatestResponseAPI::Success(s) => Ok(crate::common::conversion_rate::from_hash_map_to_vec(
+            s.rates, base,
+        )?),
         LatestResponseAPI::Fail(f) => Err(anyhow::anyhow!(
             "Call {} failed : {} - {}",
             url,
@@ -73,7 +73,7 @@ mod test {
     use rust_decimal_macros::dec;
     use serde_json::json;
 
-    use crate::{commands::common::conversion_rate::ConversionRate, config::Config};
+    use crate::common::conversion_rate::ConversionRate;
 
     fn setup(path: &str) {
         std::fs::create_dir_all(path).unwrap();
@@ -208,20 +208,11 @@ mod test {
 
         let file_path = dirpath.to_string() + "conversion_rates.tsv";
 
-        let config = Config {
-            api_key: api_key.to_string(),
-            base: base.to_string(),
-            conversion_rates_file_path: file_path,
-            latest_endpoint_url: server.url("/latest?access_key={api_key}&base={base}"),
-            symbols_endpoint_url: "test".to_string(),
-            symbols_file_path: "test".to_string(),
-        };
-
         let response = super::update_conversion_rates(
-            &config.latest_endpoint_url,
-            &config.api_key,
-            &config.base,
-            &config.conversion_rates_file_path,
+            &server.url("/latest?access_key={api_key}&base={base}"),
+            api_key,
+            base,
+            &file_path,
         );
 
         mock.assert();
@@ -229,7 +220,7 @@ mod test {
         println!("{:?}", response);
         assert!(response.is_ok());
 
-        assert!(Path::new(&config.conversion_rates_file_path).exists());
+        assert!(Path::new(&file_path).exists());
 
         end(dirpath);
     }

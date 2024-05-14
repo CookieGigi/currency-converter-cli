@@ -2,7 +2,7 @@ use std::path::Path;
 
 use rust_decimal::Decimal;
 
-use crate::commands::common::{conversion_rate::ConversionRate, load_data};
+use crate::common::{conversion_rate::ConversionRate, load_data};
 
 use anyhow::Result;
 
@@ -27,10 +27,7 @@ mod test {
 
     use rust_decimal_macros::dec;
 
-    use crate::{
-        commands::common::{conversion_rate::ConversionRate, create_or_update_file},
-        config::Config,
-    };
+    use crate::common::{conversion_rate::ConversionRate, create_or_update_file};
 
     fn setup(dirpath: String, data: Vec<ConversionRate>) -> String {
         std::fs::create_dir_all(&dirpath).unwrap();
@@ -54,19 +51,7 @@ mod test {
         }];
         let filepath = setup(dirpath.to_string(), data);
 
-        let config = Config {
-            base: "EUR".to_string(),
-            conversion_rates_file_path: filepath,
-            ..Default::default()
-        };
-
-        let res = super::convert(
-            &config.conversion_rates_file_path,
-            &config.base,
-            &from,
-            &to,
-            dec!(10.0),
-        );
+        let res = super::convert(&filepath, "EUR", &from, &to, dec!(10.0));
         assert!(res.is_ok());
         assert_eq!(res.unwrap(), dec!(10.8));
     }
