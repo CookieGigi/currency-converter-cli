@@ -3,12 +3,14 @@ use serde::Serialize;
 
 use crate::config::Config;
 
+/// Information about configuration of this app
 #[derive(Serialize, Debug)]
 pub struct ConfigInfo {
     config_path: String,
     content: Config,
 }
 
+/// Get informations about configuration of this app
 pub fn get_config_info(config: Config, config_path: Option<String>) -> Result<ConfigInfo> {
     let current_config_path = match config_path {
         Some(path) => path,
@@ -28,4 +30,39 @@ pub fn get_config_info(config: Config, config_path: Option<String>) -> Result<Co
         config_path: current_config_path,
         content: config,
     })
+}
+
+#[cfg(test)]
+mod test {
+    use crate::config::Config;
+
+    #[test]
+    fn get_config_info() {
+        let config = Config::default();
+        let dirpath = "./temp/test/info/info_config/";
+
+        std::fs::create_dir_all(dirpath).unwrap();
+
+        let path = dirpath.to_string() + "config.toml";
+
+        confy::store_path(path.clone(), &config).unwrap();
+
+        let res = super::get_config_info(config, Some(path.clone()));
+
+        assert!(res.is_ok());
+        assert_eq!(res.unwrap().config_path, path);
+
+        std::fs::remove_dir_all(dirpath).unwrap();
+    }
+
+    #[test]
+    fn get_config_info_auto_path() {
+        let config = Config::default();
+
+        confy::store("convert_currency_cli", "test", &config).unwrap();
+
+        let res = super::get_config_info(config, None);
+
+        assert!(res.is_ok());
+    }
 }

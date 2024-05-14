@@ -17,6 +17,7 @@ mod info_config;
 mod info_conversion_rates;
 mod info_symbols;
 
+#[cfg(not(tarpaulin_include))]
 pub fn run_info(config: Config, args: &InfoArgs, config_path: Option<String>) -> Result<()> {
     let mut infos: HashMap<&str, Info> = HashMap::new();
 
