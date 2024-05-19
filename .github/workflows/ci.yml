@@ -17,8 +17,10 @@ jobs:
       - name: Install Rust toolchain
         uses: dtolnay/rust-toolchain@stable
       - uses: Swatinem/rust-cache@v2
-      - name: Run tests
+      - name: Run tests on root
         run: cargo test --all-features --workspace
+      - name: Run tests on workspace currency-conversion
+        run: cd ./currency-conversion && cargo test --all-features --workspace 
 
   rustfmt:
     name: Rustfmt
