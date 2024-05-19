@@ -10,7 +10,7 @@ rust_decimal = "1.35.0"
 serde = { version = "1.0.202", features = ["derive"] }
 tracing = "0.1.40"
 tracing-log = "0.2.0"
-anyhow = "1.0.83"
+anyhow = "1.0.86"
 
 [dev-dependencies]
 httpmock = "0.7.0"
