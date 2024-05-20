@@ -5,7 +5,7 @@ use serde::Deserialize;
 
 use super::info_config::ConfigInfo;
 
-use anyhow::Result;
+use anyhow::{anyhow, Result};
 
 /// All type of information
 #[derive(Debug)]
@@ -30,7 +30,7 @@ pub struct DataInfoSuccess {
 
 #[derive(Debug)]
 pub struct DataInfoError {
-    pub error: std::io::Error,
+    pub error: anyhow::Error,
 }
 
 /// Get information about data
@@ -41,15 +41,14 @@ where
     let file_metadata = std::fs::metadata(path);
 
     match file_metadata {
-        Ok(metadata) => {
-            let file_data = load_data::<T>(Path::new(path))?;
-
-            Ok(DataInfo::Success(DataInfoSuccess {
+        Ok(metadata) => match load_data::<T>(Path::new(path)) {
+            Ok(data) => Ok(DataInfo::Success(DataInfoSuccess {
                 seconds_since_last_update: metadata.modified()?.elapsed()?,
-                number_of_line: file_data.len(),
-            }))
-        }
-        Err(e) => Ok(DataInfo::Error(DataInfoError { error: e })),
+                number_of_line: data.len(),
+            })),
+            Err(e) => Ok(DataInfo::Error(DataInfoError { error: e })),
+        },
+        Err(e) => Ok(DataInfo::Error(DataInfoError { error: anyhow!(e) })),
     }
 }
 
