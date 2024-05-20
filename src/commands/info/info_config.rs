@@ -21,6 +21,7 @@ pub fn get_config_info(config: Config, config_path: Option<String>) -> Result<Co
 
             match path {
                 Ok(p) => p,
+                #[cfg(not(tarpaulin_include))]
                 Err(os) => os.to_string_lossy().to_string(),
             }
         }

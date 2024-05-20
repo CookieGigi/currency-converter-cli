@@ -46,6 +46,7 @@ where
                 seconds_since_last_update: metadata.modified()?.elapsed()?,
                 number_of_line: data.len(),
             })),
+            #[cfg(not(tarpaulin_include))]
             Err(e) => Ok(DataInfo::Error(DataInfoError { error: e })),
         },
         Err(e) => Ok(DataInfo::Error(DataInfoError { error: anyhow!(e) })),

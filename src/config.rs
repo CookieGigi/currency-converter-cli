@@ -20,8 +20,8 @@ pub struct Config {
     pub conversion_rates_file_path: String,
 }
 
+#[cfg(not(tarpaulin_include))]
 impl Default for Config {
-    #[cfg(not(tarpaulin_include))]
     fn default() -> Self {
         Config {
             api_key: "#INSERT_API_KEY_HERE#".to_string(),
@@ -37,6 +37,7 @@ impl Default for Config {
     }
 }
 
+#[cfg(not(tarpaulin_include))]
 impl Config {
     pub fn prompt_config(&self) -> Result<Config> {
         let mut res = Config::default();
@@ -92,6 +93,7 @@ impl Config {
     }
 }
 
+#[cfg(not(tarpaulin_include))]
 fn prompt_string(stdin: &Stdin, text: &str, current_value: &String) -> Result<String> {
     println!("{text} (current : {current_value}) : ");
     let mut buffer = String::new();
