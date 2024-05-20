@@ -1,7 +1,10 @@
+use std::io::Stdin;
+
+use anyhow::{bail, Result};
 use serde::{Deserialize, Serialize};
 
 /// Config file structure
-#[derive(Default, Debug, Deserialize, Serialize)]
+#[derive(Debug, Deserialize, Serialize, Eq, PartialEq)]
 pub struct Config {
     /// API token
     pub api_key: String,
@@ -15,4 +18,87 @@ pub struct Config {
     pub symbols_file_path: String,
     // file path where conversion rates are stored
     pub conversion_rates_file_path: String,
+}
+
+impl Default for Config {
+    #[cfg(not(tarpaulin_include))]
+    fn default() -> Self {
+        Config {
+            api_key: "#INSERT_API_KEY_HERE#".to_string(),
+            base: "EUR".to_string(),
+            symbols_file_path: "./symbols.tsv".to_string(),
+            conversion_rates_file_path: "./conversion_rates.tsv".to_string(),
+            latest_endpoint_url:
+                "http://api.exchangeratesapi.io/v1/latest?access_key={api_key}&base={base}"
+                    .to_string(),
+            symbols_endpoint_url: "http://api.exchangeratesapi.io/v1/symbols?access_key={api_key}"
+                .to_string(),
+        }
+    }
+}
+
+impl Config {
+    pub fn prompt_config(&self) -> Result<Config> {
+        let mut res = Config::default();
+        let stdin = std::io::stdin();
+        let mut buffer = String::new();
+        println!("Initialization of config file");
+
+        // api key
+        println!(
+            "api key (required exchange rates api key)(current : {}) : ",
+            self.api_key
+        );
+        stdin.read_line(&mut buffer)?;
+        if !buffer.trim().is_empty() {
+            res.api_key.clone_from(&buffer.trim().to_string());
+        } else if self.api_key != "#INSERT_API_KEY_HERE#" {
+            res.api_key.clone_from(&self.api_key);
+        } else {
+            bail!("API key must be provided !")
+        }
+
+        // base
+        res.base
+            .clone_from(&prompt_string(&stdin, "base currency", &self.base)?);
+        // symbols file path
+        res.symbols_file_path.clone_from(&prompt_string(
+            &stdin,
+            "currency symbols file path",
+            &self.symbols_file_path,
+        )?);
+        // symbols endpoint
+        res.symbols_endpoint_url.clone_from(&prompt_string(
+            &stdin,
+            "currency symbols endpoint URL",
+            &self.symbols_endpoint_url,
+        )?);
+        // converison rates file path
+        res.conversion_rates_file_path.clone_from(&prompt_string(
+            &stdin,
+            "conversion rates file path",
+            &self.conversion_rates_file_path,
+        )?);
+        // conversion rates endpoint
+        res.latest_endpoint_url.clone_from(&prompt_string(
+            &stdin,
+            "conversion rates endpoint URL",
+            &self.latest_endpoint_url,
+        )?);
+
+        println!("Config initialized !");
+
+        Ok(res)
+    }
+}
+
+fn prompt_string(stdin: &Stdin, text: &str, current_value: &String) -> Result<String> {
+    println!("{text} (current : {current_value}) : ");
+    let mut buffer = String::new();
+    stdin.read_line(&mut buffer)?;
+    if buffer.trim().is_empty() {
+        return Ok(current_value.clone());
+    }
+
+    Ok(buffer.trim().to_string())
 }

@@ -13,13 +13,14 @@ pub mod errors;
 pub fn run(sub_command: SubCommand, config: Config, config_path: Option<String>) -> Result<()> {
     use commands::convert::run_convert;
 
-    use crate::commands::{info::run_info, list::run_list};
+    use crate::commands::{config::run_config, info::run_info, list::run_list};
 
     match sub_command {
         SubCommand::Update => run_update(&config)?,
         SubCommand::Convert(args) => run_convert(&config, &args)?,
         SubCommand::List(args) => run_list(&config, &args)?,
         SubCommand::Info(args) => run_info(config, &args, config_path)?,
+        SubCommand::Config => run_config(&config, &config_path)?,
     }
     Ok(())
 }

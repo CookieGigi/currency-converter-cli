@@ -34,6 +34,7 @@ fn cli_info() -> Result<(), Box<dyn std::error::Error>> {
         conversion_rates_file_path: conversion_rates_path,
         base: "EUR".to_string(),
         symbols_file_path: symbols_path,
+        api_key: "test".to_string(),
         ..Default::default()
     };
 

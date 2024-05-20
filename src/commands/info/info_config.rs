@@ -15,7 +15,7 @@ pub fn get_config_info(config: Config, config_path: Option<String>) -> Result<Co
     let current_config_path = match config_path {
         Some(path) => path,
         None => {
-            let path = confy::get_configuration_file_path("", None)?;
+            let path = confy::get_configuration_file_path("currency-converter-cli", None)?;
 
             let path = path.into_os_string().into_string();
 
@@ -38,7 +38,14 @@ mod test {
 
     #[test]
     fn get_config_info() {
-        let config = Config::default();
+        let config = Config {
+            base: String::new(),
+            api_key: String::new(),
+            symbols_file_path: String::new(),
+            latest_endpoint_url: String::new(),
+            symbols_endpoint_url: String::new(),
+            conversion_rates_file_path: String::new(),
+        };
         let dirpath = "./temp/test/info/info_config/";
 
         std::fs::create_dir_all(dirpath).unwrap();
@@ -57,7 +64,14 @@ mod test {
 
     #[test]
     fn get_config_info_auto_path() {
-        let config = Config::default();
+        let config = Config {
+            base: String::new(),
+            api_key: String::new(),
+            symbols_file_path: String::new(),
+            latest_endpoint_url: String::new(),
+            symbols_endpoint_url: String::new(),
+            conversion_rates_file_path: String::new(),
+        };
 
         confy::store("convert_currency_cli", "test", &config).unwrap();
 

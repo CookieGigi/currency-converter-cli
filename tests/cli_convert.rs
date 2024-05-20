@@ -25,6 +25,7 @@ fn cli_convert() -> Result<(), Box<dyn std::error::Error>> {
     let config = Config {
         conversion_rates_file_path: path,
         base: "EUR".to_string(),
+        api_key: "test".to_string(),
         ..Default::default()
     };
 

@@ -28,6 +28,7 @@ fn cli_get_symbols() -> Result<(), Box<dyn std::error::Error>> {
     let config_path = dirpath.to_string() + "/config.toml";
     let config = Config {
         symbols_file_path: path,
+        api_key: "test".to_string(),
         ..Default::default()
     };
 

@@ -29,6 +29,8 @@ pub enum SubCommand {
     List(ListArgs),
     /// Show informations
     Info(InfoArgs),
+    /// Prompt config
+    Config,
 }
 
 #[derive(Args, Debug)]
