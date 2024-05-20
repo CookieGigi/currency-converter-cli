@@ -1,8 +1,11 @@
 # currency-converter-cli
 
+currency-converter-cli is a simple CLI tool to convert currency offline. It uses conversion rates store in a local file.
+
 [![Crates.io](https://img.shields.io/crates/v/currency-converter-cli.svg)](https://crates.io/crates/currency-converter-cli)
 [![Docs.rs](https://docs.rs/currency-converter-cli/badge.svg)](https://docs.rs/currency-converter-cli)
 [![CI](https://github.com/CookieGigi/currency-converter-cli/workflows/CI/badge.svg)](https://github.com/CookieGigi/currency-converter-cli/actions)
+
 
 ## Installation
 
