@@ -21,7 +21,7 @@ pub fn run(
     use crate::commands::{config::run_config, info::run_info, list::run_list};
 
     match sub_command {
-        SubCommand::Update => run_update(&config)?,
+        SubCommand::Update(args) => run_update(&config, &args)?,
         SubCommand::Convert(args) => run_convert(&config, &args)?,
         SubCommand::List(args) => run_list(&config, &args)?,
         SubCommand::Info(args) => run_info(config, &args, config_path)?,

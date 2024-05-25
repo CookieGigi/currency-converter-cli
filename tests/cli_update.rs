@@ -85,6 +85,7 @@ fn cli_update() -> Result<(), Box<dyn std::error::Error>> {
         .arg("--config-path")
         .arg(config_path)
         .arg("update")
+        .arg("--all")
         .assert()
         .success();
 

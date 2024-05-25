@@ -26,7 +26,7 @@ pub struct CliArgs {
 #[derive(Subcommand, Debug)]
 pub enum SubCommand {
     /// Update supported symbols and conversion rates files
-    Update,
+    Update(UpdateArgs),
     /// Convert a value from a currency to an other
     Convert(ConvertArgs),
     /// List all data from dataset indicated
@@ -77,6 +77,19 @@ pub struct InfoArgs {
     pub symbols: bool,
 
     /// show symbols information
+    #[arg(long, action = clap::ArgAction::SetTrue)]
+    pub conversion_rates: bool,
+}
+
+#[derive(Debug, Args)]
+pub struct UpdateArgs {
+    /// Update all
+    #[arg(long, action = clap::ArgAction::SetTrue)]
+    pub all: bool,
+    /// Update symbols
+    #[arg(long, action = clap::ArgAction::SetTrue)]
+    pub symbols: bool,
+    /// Update conversion rates
     #[arg(long, action = clap::ArgAction::SetTrue)]
     pub conversion_rates: bool,
 }
