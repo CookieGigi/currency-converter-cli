@@ -1,4 +1,4 @@
-use std::io::Stdin;
+use std::{io::Stdin, path::PathBuf};
 
 use anyhow::{bail, Result};
 use serde::{Deserialize, Serialize};
@@ -23,11 +23,25 @@ pub struct Config {
 #[cfg(not(tarpaulin_include))]
 impl Default for Config {
     fn default() -> Self {
+        // If error to find home_dir => panic
+        let homedir = home::home_dir().unwrap();
+
+        let mut symbols_file_path = PathBuf::new();
+        symbols_file_path.push(&homedir);
+        symbols_file_path.push(".currency-converter-cli/symbols.tsv");
+
+        let mut conversion_rates_file_path = PathBuf::new();
+        conversion_rates_file_path.push(&homedir);
+        conversion_rates_file_path.push(".currency-converter-cli/conversion_rates.tsv");
+
         Config {
             api_key: "#INSERT_API_KEY_HERE#".to_string(),
             base: "EUR".to_string(),
-            symbols_file_path: "./symbols.tsv".to_string(),
-            conversion_rates_file_path: "./conversion_rates.tsv".to_string(),
+            // Not sure of this one : it can cause problem in case of path with non utf-8
+            // characters
+            // TODO : refactor to replace String to Pathbuf
+            symbols_file_path: symbols_file_path.to_string_lossy().into_owned(),
+            conversion_rates_file_path: conversion_rates_file_path.to_string_lossy().into_owned(),
             latest_endpoint_url:
                 "http://api.exchangeratesapi.io/v1/latest?access_key={api_key}&base={base}"
                     .to_string(),
