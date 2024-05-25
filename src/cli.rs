@@ -17,6 +17,10 @@ pub struct CliArgs {
     /// Optional : path to config file (default : handle by confy)
     #[arg(long)]
     pub config_path: Option<String>,
+
+    /// Optional : config profile name
+    #[arg(long)]
+    pub config_profile: Option<String>,
 }
 
 #[derive(Subcommand, Debug)]
