@@ -101,8 +101,6 @@ impl Config {
             &self.latest_endpoint_url,
         )?);
 
-        println!("Config initialized !");
-
         Ok(res)
     }
 }

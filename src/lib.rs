@@ -10,7 +10,12 @@ pub mod errors;
 
 /// Handle commands execution
 #[cfg(not(tarpaulin_include))]
-pub fn run(sub_command: SubCommand, config: Config, config_path: Option<String>) -> Result<()> {
+pub fn run(
+    sub_command: SubCommand,
+    config: Config,
+    config_path: Option<String>,
+    config_profile: Option<&str>,
+) -> Result<()> {
     use commands::convert::run_convert;
 
     use crate::commands::{config::run_config, info::run_info, list::run_list};
@@ -20,7 +25,7 @@ pub fn run(sub_command: SubCommand, config: Config, config_path: Option<String>)
         SubCommand::Convert(args) => run_convert(&config, &args)?,
         SubCommand::List(args) => run_list(&config, &args)?,
         SubCommand::Info(args) => run_info(config, &args, config_path)?,
-        SubCommand::Config => run_config(&config, &config_path)?,
+        SubCommand::Config => run_config(&config, &config_path, config_profile)?,
     }
     Ok(())
 }

@@ -21,6 +21,9 @@ mod info_symbols;
 pub fn run_info(config: Config, args: &InfoArgs, config_path: Option<String>) -> Result<()> {
     let mut infos: HashMap<&str, Info> = HashMap::new();
 
+    tracing::info!("Info begin");
+    tracing::debug!("{:?}", args);
+
     // Symbols
     if args.symbols || args.all {
         infos.insert(
@@ -49,6 +52,8 @@ pub fn run_info(config: Config, args: &InfoArgs, config_path: Option<String>) ->
     }
 
     println!("{:?}", infos);
+    tracing::info!("Info end");
+    tracing::debug!("{:?}", infos);
 
     Ok(())
 }

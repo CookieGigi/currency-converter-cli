@@ -7,11 +7,16 @@ use currency_conversion::update::{
 
 #[cfg(not(tarpaulin_include))]
 pub fn run_update(config: &Config) -> Result<()> {
+    tracing::info!("Update symbols begin");
+
     update_symbols(
         &config.symbols_endpoint_url,
         &config.api_key,
         &config.symbols_file_path,
     )?;
+
+    tracing::info!("Update symbols end");
+    tracing::info!("Update conversion rates begin");
 
     update_conversion_rates(
         &config.latest_endpoint_url,
@@ -19,5 +24,6 @@ pub fn run_update(config: &Config) -> Result<()> {
         &config.base,
         &config.conversion_rates_file_path,
     )?;
+    tracing::info!("Update conversion rates end");
     Ok(())
 }
