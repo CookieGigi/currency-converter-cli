@@ -28,11 +28,11 @@ impl Default for Config {
 
         let mut symbols_file_path = PathBuf::new();
         symbols_file_path.push(&homedir);
-        symbols_file_path.push(".currency-converter-cli/symbols.tsv");
+        symbols_file_path.push(".currency-conversion-cli/symbols.tsv");
 
         let mut conversion_rates_file_path = PathBuf::new();
         conversion_rates_file_path.push(&homedir);
-        conversion_rates_file_path.push(".currency-converter-cli/conversion_rates.tsv");
+        conversion_rates_file_path.push(".currency-conversion-cli/conversion_rates.tsv");
 
         Config {
             api_key: "#INSERT_API_KEY_HERE#".to_string(),

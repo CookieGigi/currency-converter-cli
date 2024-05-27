@@ -1,13 +1,13 @@
 [package]
-name = "currency-converter-cli"
+name = "currency-conversion-cli"
 version = "0.1.0"
 edition = "2021"
 authors = ["Cookiegigi <Cookiegigi@pm.me>"]
 license = "MIT OR Apache-2.0"
-description = "currency-converter-cli is a simple CLI tool to convert currency offline. It uses conversion rates store in a local file."
+description = "currency-conversion-cli is a simple CLI tool to convert currency offline. It uses conversion rates store in a local file."
 readme = "README.md"
-homepage = "https://github.com/CookieGigi/currency-converter-cli"
-repository = "https://github.com/CookieGigi/currency-converter-cli"
+homepage = "https://github.com/CookieGigi/currency-conversion-cli"
+repository = "https://github.com/CookieGigi/currency-conversion-cli"
 keywords = ["cli", "currency", "conversion"]
 categories = ["command-line-utilities"]
 

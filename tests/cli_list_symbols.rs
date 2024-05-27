@@ -2,7 +2,7 @@ use std::path::Path;
 
 use assert_cmd::Command;
 use currency_conversion::common::{create_or_update_file, supported_symbols::Symbols};
-use currency_converter_cli::config::Config;
+use currency_conversion_cli::config::Config;
 use predicates::prelude::predicate;
 
 #[test]
@@ -34,7 +34,7 @@ fn cli_get_symbols() -> Result<(), Box<dyn std::error::Error>> {
 
     confy::store_path(&config_path, config).unwrap();
 
-    let mut cmd = Command::cargo_bin("currency-converter-cli")?;
+    let mut cmd = Command::cargo_bin("currency-conversion-cli")?;
 
     cmd.arg("-vvv")
         .arg("--config-path")

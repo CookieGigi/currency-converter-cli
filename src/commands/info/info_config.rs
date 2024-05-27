@@ -15,7 +15,7 @@ pub fn get_config_info(config: Config, config_path: Option<String>) -> Result<Co
     let current_config_path = match config_path {
         Some(path) => path,
         None => {
-            let path = confy::get_configuration_file_path("currency-converter-cli", None)?;
+            let path = confy::get_configuration_file_path("currency-conversion-cli", None)?;
 
             let path = path.into_os_string().into_string();
 

@@ -1,10 +1,10 @@
-# currency-converter-cli
+# currency-conversion-cli
 
-currency-converter-cli is a simple CLI tool to convert currency offline. It uses conversion rates store in a local file.
+currency-conversion-cli is a simple CLI tool to convert currency offline. It uses conversion rates store in a local file.
 
-[![Crates.io](https://img.shields.io/crates/v/currency-converter-cli.svg)](https://crates.io/crates/currency-converter-cli)
-[![Docs.rs](https://docs.rs/currency-converter-cli/badge.svg)](https://docs.rs/currency-converter-cli)
-[![CI](https://github.com/CookieGigi/currency-converter-cli/workflows/CI/badge.svg)](https://github.com/CookieGigi/currency-converter-cli/actions)
+[![Crates.io](https://img.shields.io/crates/v/currency-conversion-cli.svg)](https://crates.io/crates/currency-conversion-cli)
+[![Docs.rs](https://docs.rs/currency-conversion-cli/badge.svg)](https://docs.rs/currency-conversion-cli)
+[![CI](https://github.com/CookieGigi/currency-conversion-cli/workflows/CI/badge.svg)](https://github.com/CookieGigi/currency-conversion-cli/actions)
 
 
 ## Installation
@@ -13,7 +13,7 @@ currency-converter-cli is a simple CLI tool to convert currency offline. It uses
 
 * Install the rust toolchain in order to have cargo installed by following
   [this](https://www.rust-lang.org/tools/install) guide.
-* run `cargo install currency-converter-cli`
+* run `cargo install currency-conversion-cli`
 
 ## License
 

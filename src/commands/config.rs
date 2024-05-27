@@ -20,7 +20,7 @@ pub fn prompt_and_store_config(
 ) -> Result<Config> {
     let res = Config::prompt_config(config)?;
     match config_path.is_none() {
-        true => confy::store("currency-converter-cli", config_profile, &res)?,
+        true => confy::store("currency-conversion-cli", config_profile, &res)?,
         false => confy::store_path(config_path.clone().unwrap(), &res)?,
     };
 

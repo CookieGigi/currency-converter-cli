@@ -1,7 +1,7 @@
 use std::path::Path;
 
 use assert_cmd::Command;
-use currency_converter_cli::config::Config;
+use currency_conversion_cli::config::Config;
 use httpmock::{Method::GET, MockServer};
 use serde_json::json;
 
@@ -78,7 +78,7 @@ fn cli_update() -> Result<(), Box<dyn std::error::Error>> {
     confy::store_path(&config_path, &config).unwrap();
 
     // exec command
-    let mut cmd = Command::cargo_bin("currency-converter-cli")?;
+    let mut cmd = Command::cargo_bin("currency-conversion-cli")?;
 
     // command working
     cmd.arg("-vvv")

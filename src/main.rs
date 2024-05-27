@@ -1,6 +1,6 @@
 use anyhow::Result;
 use clap::Parser;
-use currency_converter_cli::{cli::CliArgs, config::Config, errors::errors_handling, run};
+use currency_conversion_cli::{cli::CliArgs, config::Config, errors::errors_handling, run};
 use tracing_log::AsTrace;
 
 #[cfg(not(tarpaulin_include))]
@@ -8,7 +8,7 @@ fn main() -> Result<()> {
     // Get command line arguments
 
     use anyhow::Context;
-    use currency_converter_cli::{cli::SubCommand, commands::config::prompt_and_store_config};
+    use currency_conversion_cli::{cli::SubCommand, commands::config::prompt_and_store_config};
     let args = CliArgs::parse();
 
     // Initialize trace
@@ -18,10 +18,10 @@ fn main() -> Result<()> {
 
     // Get config
     let mut config: Config = match &args.config_path.is_none() {
-        true => confy::load("currency-converter-cli", args.config_profile.as_deref())
-            .with_context(|| "Use \"currency-converter-cli config\" to create the config")?,
+        true => confy::load("currency-conversion-cli", args.config_profile.as_deref())
+            .with_context(|| "Use \"currency-conversion-cli config\" to create the config")?,
         false => confy::load_path(args.config_path.clone().unwrap())
-            .with_context(|| "Use \"currency-converter-cli config\" to create the config")?,
+            .with_context(|| "Use \"currency-conversion-cli config\" to create the config")?,
     };
 
     // Initialized config if not
