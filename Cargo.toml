@@ -26,6 +26,7 @@ tracing-log = "0.2.0"
 tracing-subscriber = "0.3.18"
 currency-conversion = { path = "./currency-conversion/" }
 home = "0.5.9"
+openssl = { version = "0.10.64", features = ["vendored"] }
 
 [dev-dependencies]
 assert_cmd = "2.0.14"
