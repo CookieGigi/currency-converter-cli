@@ -2,6 +2,13 @@
 name = "currency-conversion"
 version = "0.1.0"
 edition = "2021"
+authors = ["Cookiegigi <Cookiegigi@pm.me>"]
+license = "MIT OR Apache-2.0"
+description = "currency-conversion is a simple lib (used by currency-conversion-cli) to convert currency offline. It uses conversion rates store in a local file."
+homepage = "https://github.com/CookieGigi/currency-conversion-cli"
+repository = "https://github.com/CookieGigi/currency-conversion-cli"
+keywords = ["cli", "currency", "conversion"]
+categories = ["command-line-utilities"]
 
 [dependencies]
 csv = "1.3.0"
