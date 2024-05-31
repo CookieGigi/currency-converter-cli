@@ -12,7 +12,7 @@ Library with all functions to get currency informations (symbols and conversion 
 
 [![Crates.io](https://img.shields.io/crates/v/currency-conversion.svg)](https://crates.io/crates/currency-conversion)
 [![Docs.rs](https://docs.rs/currency-conversion/badge.svg)](https://docs.rs/currency-conversion)
-[README](https://github.com/CookieGigi/currency-conversion-cli/currency-conversion/README.md)
+[![README](https://img.shields.io/crates/v/currency-conversion.svg)](https://github.com/CookieGigi/currency-conversion-cli/blob/main/currency-conversion/README.md)
 
 ## Installation
 
