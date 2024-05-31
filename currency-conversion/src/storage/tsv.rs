@@ -62,11 +62,14 @@ fn create_or_update_file<T>(data: &[T], path: &Path) -> Result<()>
 where
     T: Serialize,
 {
+    tracing::info!("Updating {:?}", path);
     let mut wrt = csv::WriterBuilder::new().delimiter(b'\t').from_path(path)?;
 
     for row in data {
         wrt.serialize(row)?;
     }
+
+    tracing::info!("Updated {:?}", path);
 
     Ok(())
 }
@@ -76,6 +79,7 @@ fn load_data<'a, T>(path: &Path) -> Result<Vec<T>>
 where
     T: for<'de> Deserialize<'de>,
 {
+    tracing::info!("Reading {:?}", path);
     let mut csv_rdr = csv::ReaderBuilder::new().delimiter(b'\t').from_path(path)?;
 
     let mut res = Vec::new();
@@ -83,6 +87,7 @@ where
     for line in csv_rdr.deserialize() {
         res.push(line?);
     }
+    tracing::info!("Readed {:?}", path);
 
     Ok(res)
 }
