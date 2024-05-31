@@ -1,28 +1,30 @@
-use std::{collections::HashMap, path::Path};
+use std::collections::HashMap;
 
 use anyhow::Result;
 use rust_decimal::Decimal;
 use serde::Deserialize;
 
-use crate::common::{conversion_rate::ConversionRate, create_or_update_file};
+use crate::common::conversion_rate::ConversionRate;
+use crate::storage::common::StorageManager;
 
 use super::common::ErrorResponseAPI;
 
 /// Update conversion rate files
-pub fn update_conversion_rates(
+pub fn update_conversion_rates<T>(
     latest_endpoint_url: &str,
     api_key: &str,
     base: &str,
-    conversion_rates_file_path: &str,
-) -> Result<()> {
+    conversion_rates_storage_manager: &T,
+) -> Result<()>
+where
+    T: StorageManager<ConversionRate>,
+{
     let url = latest_endpoint_url
         .replace("{api_key}", api_key)
         .replace("{base}", base);
     let data = get_conversion_rates(&url, base)?;
 
-    let path = Path::new(conversion_rates_file_path);
-
-    create_or_update_file(&data, path)?;
+    conversion_rates_storage_manager.update(&data)?;
 
     Ok(())
 }
@@ -73,7 +75,7 @@ mod test {
     use rust_decimal_macros::dec;
     use serde_json::json;
 
-    use crate::common::conversion_rate::ConversionRate;
+    use crate::{common::conversion_rate::ConversionRate, storage::tsv::TSVStorageManager};
 
     fn setup(path: &str) {
         std::fs::create_dir_all(path).unwrap();
@@ -208,11 +210,13 @@ mod test {
 
         let file_path = dirpath.to_string() + "conversion_rates.tsv";
 
+        let storage_manager = TSVStorageManager::build(file_path.clone());
+
         let response = super::update_conversion_rates(
             &server.url("/latest?access_key={api_key}&base={base}"),
             api_key,
             base,
-            &file_path,
+            &storage_manager,
         );
 
         mock.assert();

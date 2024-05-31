@@ -1,7 +1,11 @@
-use std::path::Path;
-
 use assert_cmd::Command;
-use currency_conversion::common::{conversion_rate::ConversionRate, create_or_update_file};
+use currency_conversion::{
+    common::conversion_rate::ConversionRate,
+    storage::{
+        common::StorageManager,
+        tsv::{TSVStorageManager, TSVStorageSettings},
+    },
+};
 use currency_conversion_cli::config::Config;
 use predicates::prelude::predicate;
 use rust_decimal_macros::dec;
@@ -19,11 +23,17 @@ fn cli_convert() -> Result<(), Box<dyn std::error::Error>> {
     std::fs::create_dir_all(dirpath).unwrap();
 
     let path = dirpath.to_string() + "/conversion_rate.tsv";
-    create_or_update_file(&data, Path::new(&path)).unwrap();
+
+    let tsv_settings = TSVStorageSettings { file_path: path };
+    let storage_manager = TSVStorageManager::from_settings(tsv_settings.clone());
+
+    storage_manager.update(&data).unwrap();
 
     let config_path = dirpath.to_string() + "/config.toml";
     let config = Config {
-        conversion_rates_file_path: path,
+        conversion_rates_storage: currency_conversion::storage::common::StorageType::TSV(
+            tsv_settings,
+        ),
         base: "EUR".to_string(),
         api_key: "test".to_string(),
         ..Default::default()

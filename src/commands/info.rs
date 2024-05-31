@@ -2,23 +2,19 @@ use std::collections::HashMap;
 
 use anyhow::Result;
 
-use crate::{
-    cli::InfoArgs,
-    commands::info::{
-        info_conversion_rates::get_converison_rates_info, info_symbols::get_symbols_info,
-    },
-    config::Config,
-};
+use crate::{cli::InfoArgs, config::Config};
 
 use self::{common::Info, info_config::get_config_info};
 
 mod common;
 mod info_config;
-mod info_conversion_rates;
-mod info_symbols;
 
 #[cfg(not(tarpaulin_include))]
 pub fn run_info(config: Config, args: &InfoArgs, config_path: Option<String>) -> Result<()> {
+    use currency_conversion::storage::common::{
+        get_conversion_rate_storage_manager, get_symbols_storage_manager, StorageManager,
+    };
+
     let mut infos: HashMap<&str, Info> = HashMap::new();
 
     tracing::info!("Info begin");
@@ -26,20 +22,21 @@ pub fn run_info(config: Config, args: &InfoArgs, config_path: Option<String>) ->
 
     // Symbols
     if args.symbols || args.all {
+        let storage_manager = get_symbols_storage_manager(config.symbols_storage.clone());
         infos.insert(
             "symbols",
-            Info::Symbols(get_symbols_info(&config.symbols_file_path)?),
+            Info::Symbols(StorageManager::get_data_info(&storage_manager)?),
         );
     }
 
     // Conversion rate
 
     if args.conversion_rates || args.all {
+        let storage_manager =
+            get_conversion_rate_storage_manager(config.conversion_rates_storage.clone());
         infos.insert(
             "conversion_rates",
-            Info::ConversionRates(get_converison_rates_info(
-                &config.conversion_rates_file_path,
-            )?),
+            Info::ConversionRates(StorageManager::get_data_info(&storage_manager)?),
         );
     }
 

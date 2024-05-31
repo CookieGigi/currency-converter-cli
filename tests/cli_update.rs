@@ -1,6 +1,7 @@
 use std::path::Path;
 
 use assert_cmd::Command;
+use currency_conversion::storage::tsv::TSVStorageSettings;
 use currency_conversion_cli::config::Config;
 use httpmock::{Method::GET, MockServer};
 use serde_json::json;
@@ -63,19 +64,29 @@ fn cli_update() -> Result<(), Box<dyn std::error::Error>> {
     // modify config
     let config_path = dirpath.to_string() + "/config.toml";
     let conversion_rate_path = dirpath.to_string() + "/conversion_rate.tsv";
+    let conversion_rates_tsv_settings = TSVStorageSettings {
+        file_path: conversion_rate_path.clone(),
+    };
     let symbols_path = dirpath.to_string() + "/symbols.tsv";
+    let symbols_tsv_settings = TSVStorageSettings {
+        file_path: symbols_path.clone(),
+    };
     #[allow(clippy::needless_update)]
     let config = Config {
         latest_endpoint_url: server.url("/latest") + "?access_key={api_key}&base={base}",
         symbols_endpoint_url: server.url("/symbols") + "?access_key={api_key}",
         base: base.to_string(),
         api_key: api_key.to_string(),
-        conversion_rates_file_path: conversion_rate_path,
-        symbols_file_path: symbols_path,
+        conversion_rates_storage: currency_conversion::storage::common::StorageType::TSV(
+            conversion_rates_tsv_settings,
+        ),
+        symbols_storage: currency_conversion::storage::common::StorageType::TSV(
+            symbols_tsv_settings,
+        ),
         ..Default::default()
     };
 
-    confy::store_path(&config_path, &config).unwrap();
+    confy::store_path(&config_path, config).unwrap();
 
     // exec command
     let mut cmd = Command::cargo_bin("currency-conversion-cli")?;
@@ -94,13 +105,13 @@ fn cli_update() -> Result<(), Box<dyn std::error::Error>> {
     mock_conversion_rate.assert();
 
     // file is created
-    assert!(Path::new(&config.symbols_file_path).exists());
-    assert!(Path::new(&config.conversion_rates_file_path).exists());
+    assert!(Path::new(&symbols_path).exists());
+    assert!(Path::new(&conversion_rate_path).exists());
 
     // check file content
     let mut csv_rdr = csv::ReaderBuilder::new()
         .delimiter(b'\t')
-        .from_path(&config.conversion_rates_file_path)?;
+        .from_path(&conversion_rate_path)?;
 
     // header
     {

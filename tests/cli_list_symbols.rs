@@ -1,7 +1,11 @@
-use std::path::Path;
-
 use assert_cmd::Command;
-use currency_conversion::common::{create_or_update_file, supported_symbols::Symbols};
+use currency_conversion::{
+    common::supported_symbols::Symbols,
+    storage::{
+        common::StorageManager,
+        tsv::{TSVStorageManager, TSVStorageSettings},
+    },
+};
 use currency_conversion_cli::config::Config;
 use predicates::prelude::predicate;
 
@@ -23,11 +27,15 @@ fn cli_get_symbols() -> Result<(), Box<dyn std::error::Error>> {
     std::fs::create_dir_all(dirpath).unwrap();
 
     let path = dirpath.to_string() + "/symbols.tsv";
-    create_or_update_file(&data, Path::new(&path)).unwrap();
+
+    let tsv_settings = TSVStorageSettings { file_path: path };
+    let storage_manager = TSVStorageManager::from_settings(tsv_settings.clone());
+
+    StorageManager::update(&storage_manager, &data).unwrap();
 
     let config_path = dirpath.to_string() + "/config.toml";
     let config = Config {
-        symbols_file_path: path,
+        symbols_storage: currency_conversion::storage::common::StorageType::TSV(tsv_settings),
         api_key: "test".to_string(),
         ..Default::default()
     };

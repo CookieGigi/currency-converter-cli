@@ -1,6 +1,7 @@
 use std::{io::Stdin, path::PathBuf};
 
 use anyhow::{bail, Result};
+use currency_conversion::storage::{common::StorageType, tsv::TSVStorageSettings};
 use serde::{Deserialize, Serialize};
 
 /// Config file structure
@@ -14,10 +15,10 @@ pub struct Config {
     pub symbols_endpoint_url: String,
     /// endpoint url to get conversion rates (param : {api_key}, {base})
     pub latest_endpoint_url: String,
-    /// file path where supported symbols are stored
-    pub symbols_file_path: String,
-    // file path where conversion rates are stored
-    pub conversion_rates_file_path: String,
+    /// Define storage strategy for symbols
+    pub symbols_storage: StorageType,
+    /// Define storage strategy for conversion_rates
+    pub conversion_rates_storage: StorageType,
 }
 
 #[cfg(not(tarpaulin_include))]
@@ -40,8 +41,12 @@ impl Default for Config {
             // Not sure of this one : it can cause problem in case of path with non utf-8
             // characters
             // TODO : refactor to replace String to Pathbuf
-            symbols_file_path: symbols_file_path.to_string_lossy().into_owned(),
-            conversion_rates_file_path: conversion_rates_file_path.to_string_lossy().into_owned(),
+            symbols_storage: StorageType::TSV(TSVStorageSettings {
+                file_path: symbols_file_path.to_string_lossy().into_owned(),
+            }),
+            conversion_rates_storage: StorageType::TSV(TSVStorageSettings {
+                file_path: conversion_rates_file_path.to_string_lossy().into_owned(),
+            }),
             latest_endpoint_url:
                 "http://api.exchangeratesapi.io/v1/latest?access_key={api_key}&base={base}"
                     .to_string(),
@@ -50,7 +55,7 @@ impl Default for Config {
         }
     }
 }
-
+// TODO : Add new storage strategy
 #[cfg(not(tarpaulin_include))]
 impl Config {
     pub fn prompt_config(&self) -> Result<Config> {
@@ -77,11 +82,11 @@ impl Config {
         res.base
             .clone_from(&prompt_string(&stdin, "base currency", &self.base)?);
         // symbols file path
-        res.symbols_file_path.clone_from(&prompt_string(
+        /*res.symbols_file_path.clone_from(&prompt_string(
             &stdin,
             "currency symbols file path",
             &self.symbols_file_path,
-        )?);
+        )?);*/
         // symbols endpoint
         res.symbols_endpoint_url.clone_from(&prompt_string(
             &stdin,
@@ -89,11 +94,11 @@ impl Config {
             &self.symbols_endpoint_url,
         )?);
         // converison rates file path
-        res.conversion_rates_file_path.clone_from(&prompt_string(
+        /*res.conversion_rates_file_path.clone_from(&prompt_string(
             &stdin,
             "conversion rates file path",
             &self.conversion_rates_file_path,
-        )?);
+        )?);*/
         // conversion rates endpoint
         res.latest_endpoint_url.clone_from(&prompt_string(
             &stdin,

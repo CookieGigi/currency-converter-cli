@@ -1,20 +1,21 @@
-use std::path::Path;
-
 use rust_decimal::Decimal;
 
-use crate::common::{conversion_rate::ConversionRate, load_data};
+use crate::{common::conversion_rate::ConversionRate, storage::common::StorageManager};
 
 use anyhow::Result;
 
 /// Convert a `value` `from` a currency `to` another
-pub fn convert(
-    conversion_rates_file_path: &str,
+pub fn convert<T>(
+    conversion_rates_storage_manager: &T,
     base: &str,
     from: &str,
     to: &str,
     value: Decimal,
-) -> Result<Decimal> {
-    let conversion_rates = load_data(Path::new(conversion_rates_file_path))?;
+) -> Result<Decimal>
+where
+    T: StorageManager<ConversionRate>,
+{
+    let conversion_rates = conversion_rates_storage_manager.get_all()?;
 
     let rate = ConversionRate::get_conversion_rate(base, &conversion_rates, from, to)?;
 
@@ -23,20 +24,23 @@ pub fn convert(
 
 #[cfg(test)]
 mod test {
-    use std::path::Path;
-
     use rust_decimal_macros::dec;
 
-    use crate::common::{conversion_rate::ConversionRate, create_or_update_file};
+    use crate::{
+        common::conversion_rate::ConversionRate,
+        storage::{common::StorageManager, tsv::TSVStorageManager},
+    };
 
-    fn setup(dirpath: String, data: Vec<ConversionRate>) -> String {
+    fn setup(dirpath: String, data: Vec<ConversionRate>) -> TSVStorageManager {
         std::fs::create_dir_all(&dirpath).unwrap();
 
         let path = dirpath + "conversion_rate.tsv";
 
-        create_or_update_file(&data, Path::new(&path)).unwrap();
+        let storage_manager = TSVStorageManager::build(path);
 
-        path
+        storage_manager.update(&data).unwrap();
+
+        storage_manager
     }
 
     #[test]
@@ -49,9 +53,9 @@ mod test {
             to: to.clone(),
             rate: dec!(1.08),
         }];
-        let filepath = setup(dirpath.to_string(), data);
+        let storage_manager = setup(dirpath.to_string(), data);
 
-        let res = super::convert(&filepath, "EUR", &from, &to, dec!(10.0));
+        let res = super::convert(&storage_manager, "EUR", &from, &to, dec!(10.0));
         assert!(res.is_ok());
         assert_eq!(res.unwrap(), dec!(10.8));
     }

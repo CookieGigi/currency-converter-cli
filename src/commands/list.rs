@@ -1,11 +1,11 @@
 use anyhow::Result;
 use currency_conversion::common::conversion_rate::ConversionRate;
-use currency_conversion::common::load_data;
 use currency_conversion::common::supported_symbols::Symbols;
 use currency_conversion::list::list_data::list_data;
 use currency_conversion::list::list_data::ListDataItem;
+use currency_conversion::storage::common::StorageManager;
 use serde::Deserialize;
-use std::path::Path;
+use serde::Serialize;
 
 use crate::{
     cli::{ListArgs, ListDataSet},
@@ -14,21 +14,30 @@ use crate::{
 
 #[cfg(not(tarpaulin_include))]
 pub fn run_list(config: &Config, args: &ListArgs) -> Result<()> {
+    use currency_conversion::storage::common::{
+        get_conversion_rate_storage_manager, get_symbols_storage_manager,
+    };
+
     match args.dataset {
-        ListDataSet::Symbols => load_and_list_data::<Symbols>(&config.symbols_file_path)?,
+        ListDataSet::Symbols => {
+            let storage_manager = get_symbols_storage_manager(config.symbols_storage.clone());
+            load_and_list_data::<Symbols>(storage_manager)?;
+        }
         ListDataSet::ConversionRates => {
-            load_and_list_data::<ConversionRate>(&config.conversion_rates_file_path)?
+            let storage_manager =
+                get_conversion_rate_storage_manager(config.conversion_rates_storage.clone());
+            load_and_list_data::<ConversionRate>(storage_manager)?;
         }
     };
     Ok(())
 }
 
 #[cfg(not(tarpaulin_include))]
-fn load_and_list_data<T>(path: &str) -> Result<()>
+fn load_and_list_data<T>(storage_manager: impl StorageManager<T>) -> Result<()>
 where
-    T: ListDataItem + for<'de> Deserialize<'de> + Ord,
+    T: ListDataItem + for<'de> Deserialize<'de> + Ord + Serialize,
 {
-    let mut data: Vec<T> = load_data(Path::new(&path))?;
+    let mut data: Vec<T> = storage_manager.get_all()?;
 
     data.sort();
 

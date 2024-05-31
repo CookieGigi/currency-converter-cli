@@ -1,6 +1,7 @@
-use std::{collections::HashMap, path::Path};
+use std::collections::HashMap;
 
-use crate::common::{create_or_update_file, supported_symbols::Symbols};
+use crate::common::supported_symbols::Symbols;
+use crate::storage::common::StorageManager;
 
 use anyhow::Result;
 use serde::Deserialize;
@@ -8,20 +9,21 @@ use serde::Deserialize;
 use super::common::ErrorResponseAPI;
 
 /// Update supported symbols file
-pub fn update_symbols(
+pub fn update_symbols<T>(
     symbols_endpoint_url: &str,
     api_key: &str,
-    symbols_file_path: &str,
-) -> Result<()> {
+    symbols_storage_manager: &T,
+) -> Result<()>
+where
+    T: StorageManager<Symbols>,
+{
     let url = symbols_endpoint_url.replace("{api_key}", api_key);
     let symbols = get_supported_symbols(&url)?;
 
     tracing::debug!("{:?}", &symbols);
     tracing::info!("{} Symbols updated", symbols.len());
 
-    let path = Path::new(symbols_file_path);
-
-    create_or_update_file(&symbols, path)?;
+    symbols_storage_manager.update(&symbols)?;
 
     Ok(())
 }
@@ -65,7 +67,7 @@ mod test {
     use httpmock::{Method::GET, MockServer};
     use serde_json::json;
 
-    use crate::common::supported_symbols::Symbols;
+    use crate::{common::supported_symbols::Symbols, storage::tsv::TSVStorageManager};
 
     fn setup(path: &str) {
         std::fs::create_dir_all(path).unwrap();
@@ -190,10 +192,12 @@ mod test {
 
         let file_path = dirpath.to_string() + "symbols.tsv";
 
+        let storage_manager = TSVStorageManager::build(file_path.clone());
+
         let response = super::update_symbols(
             &server.url("/test?access_key={api_key}"),
             api_key,
-            &file_path,
+            &storage_manager,
         );
 
         mock.assert();

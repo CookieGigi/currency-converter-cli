@@ -1,10 +1,13 @@
 use assert_cmd::Command;
-use currency_conversion::common::{
-    conversion_rate::ConversionRate, create_or_update_file, supported_symbols::Symbols,
+use currency_conversion::{
+    common::{conversion_rate::ConversionRate, supported_symbols::Symbols},
+    storage::{
+        common::StorageManager,
+        tsv::{TSVStorageManager, TSVStorageSettings},
+    },
 };
 use currency_conversion_cli::config::Config;
 use rust_decimal_macros::dec;
-use std::path::Path;
 
 #[test]
 fn cli_info() -> Result<(), Box<dyn std::error::Error>> {
@@ -24,16 +27,33 @@ fn cli_info() -> Result<(), Box<dyn std::error::Error>> {
     std::fs::create_dir_all(dirpath).unwrap();
 
     let conversion_rates_path = dirpath.to_string() + "/conversion_rate.tsv";
-    create_or_update_file(&conversion_rates, Path::new(&conversion_rates_path)).unwrap();
+
+    let tsv_settings_conversion_rates = TSVStorageSettings {
+        file_path: conversion_rates_path,
+    };
+    let storage_manager_conversion_rates =
+        TSVStorageManager::from_settings(tsv_settings_conversion_rates.clone());
+
+    StorageManager::update(&storage_manager_conversion_rates, &conversion_rates).unwrap();
 
     let symbols_path = dirpath.to_string() + "/symbols.tsv";
-    create_or_update_file(&symbols, Path::new(&symbols_path)).unwrap();
+
+    let tsv_settings_symbols = TSVStorageSettings {
+        file_path: symbols_path,
+    };
+    let storage_manager_symbols = TSVStorageManager::from_settings(tsv_settings_symbols.clone());
+
+    StorageManager::update(&storage_manager_symbols, &symbols).unwrap();
 
     let config_path = dirpath.to_string() + "/config.toml";
     let config = Config {
-        conversion_rates_file_path: conversion_rates_path,
+        conversion_rates_storage: currency_conversion::storage::common::StorageType::TSV(
+            tsv_settings_conversion_rates,
+        ),
         base: "EUR".to_string(),
-        symbols_file_path: symbols_path,
+        symbols_storage: currency_conversion::storage::common::StorageType::TSV(
+            tsv_settings_symbols,
+        ),
         api_key: "test".to_string(),
         ..Default::default()
     };
