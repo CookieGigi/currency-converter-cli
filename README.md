@@ -6,13 +6,12 @@ currency-conversion-cli is a simple CLI tool to convert currency offline. It use
 [![Docs.rs](https://docs.rs/currency-conversion-cli/badge.svg)](https://docs.rs/currency-conversion-cli)
 [![CI](https://github.com/CookieGigi/currency-conversion-cli/workflows/CI/badge.svg)](https://github.com/CookieGigi/currency-conversion-cli/actions)
 
-## currency-conversion
+## [currency-conversion](https://github.com/CookieGigi/currency-conversion-cli/blob/main/currency-conversion/README.md)
 
 Library with all functions to get currency informations (symbols and conversion rates), store them locally and do conversion.
 
 [![Crates.io](https://img.shields.io/crates/v/currency-conversion.svg)](https://crates.io/crates/currency-conversion)
 [![Docs.rs](https://docs.rs/currency-conversion/badge.svg)](https://docs.rs/currency-conversion)
-[![README](https://img.shields.io/crates/v/currency-conversion.svg)](https://github.com/CookieGigi/currency-conversion-cli/blob/main/currency-conversion/README.md)
 
 ## Installation
 
